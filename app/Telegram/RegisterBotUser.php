@@ -6,6 +6,7 @@ namespace App\Telegram;
 use App\Constants\ActionConstants;
 use App\Constants\ActionMethodConstants;
 use App\Constants\LanguageConstants;
+use App\Constants\MessageCommentConstants;
 use App\Constants\MessageTypeConstants;
 use App\Models\BotUser;
 use App\Modules\Telegram\MessageLog;
@@ -17,6 +18,11 @@ use App\Services\BotService;
 class RegisterBotUser extends BotService
 {
 
+    /**
+     * RegisterBotUser constructor.
+     * @param Telegram $telegram
+     * @param WebhookUpdates $updates
+     */
     public function __construct(Telegram $telegram, WebhookUpdates $updates)
     {
         parent::__construct($telegram, $updates);
@@ -28,12 +34,18 @@ class RegisterBotUser extends BotService
         }
     }
 
+    /**
+     * Метод отвечает за порядок выполнения всех задач, всех шагов
+     */
     public function index()
     {
         $method = explode('.', $this->action()->sub_action)[1];
         $this->$method();
     }
 
+    /**
+     * Метод отправляет список языков
+     */
     public function sendLanguagesList()
     {
         $keyboard = new ReplyMarkup(true, true);
@@ -49,7 +61,7 @@ class RegisterBotUser extends BotService
             'text' => __('Tilni kiriting'),
             'reply_markup' => $keyboard->keyboard(Keyboards::languagesList())
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_SENT_LANGUAGES_LIST);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_LANGUAGES_LIST, MessageCommentConstants::REGISTER_SENT_LANGUAGES_LIST);
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::REGISTER_GET_LANGUAGE_SEND_NAME_REQUEST
@@ -57,12 +69,16 @@ class RegisterBotUser extends BotService
         }
     }
 
+    /**
+     * Метод получает язык и отправляет запрос на ввод имени
+     */
     public function getLanguageSendNameRequest()
     {
 
         $this->validation->check('in:🇺🇿,🇷🇺,🇬🇧');
 
         if ($this->validation->fails()) {
+            $this->sendErrorMessages();
             return;
         }
         $lang = LanguageConstants::key($this->text);
@@ -75,7 +91,7 @@ class RegisterBotUser extends BotService
             'text' => __('Ismingizni kiriting'),
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_SENT_NAME_REQUEST);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_NAME_REQUEST, MessageCommentConstants::REGISTER_SENT_NAME_REQUEST);
 
         if ($message['ok']) {
             $this->action()->update([
@@ -84,11 +100,15 @@ class RegisterBotUser extends BotService
         }
     }
 
+    /**
+     * Метод получает имя и отправляет запрос на ввод номера телефона
+     */
     public function getNameSendPhoneRequest()
     {
         $this->validation->check('name');
 
         if ($this->validation->fails()) {
+            $this->sendErrorMessages();
             return;
         }
 
@@ -104,7 +124,7 @@ class RegisterBotUser extends BotService
 
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_SENT_PHONE_REQUEST);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_PHONE_REQUEST, MessageCommentConstants::REGISTER_SENT_PHONE_REQUEST);
 
         if ($message['ok']) {
             $this->action()->update([
@@ -113,19 +133,23 @@ class RegisterBotUser extends BotService
         }
     }
 
+    /**
+     * Метод получает номер телефона и закончит регистрацию и отправляет главное меню
+     */
     public function registerGetPhoneAndFinishRegistration()
     {
-        $this
+
+        $validation = $this
             ->validation
             ->attributes($phone = $this
                 ->updates
                 ->message()
-                ->contact()
-                ->phoneNumber()
+                ->getContact()
             )
-            ->check('regex:/^\+?998\d{9}$/');
+            ->check('regex:/^\+?998\d{9}$/', "isContact:{$this->updates->message()->isContact()}");
 
-        if ($this->validation->fails()) {
+        if ($validation->fails()) {
+            $this->sendErrorMessages();
             return;
         }
 
@@ -140,7 +164,7 @@ class RegisterBotUser extends BotService
             'text' => __("Siz muvaffaqiyatli registratsiyadan o'tdingiz")
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_REGISTRATION_FINISHED);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_REGISTRATION_FINISHED, MessageCommentConstants::REGISTER_REGISTRATION_FINISHED);
 
         if ($message['ok']) {
             $this->sendMainMenu();

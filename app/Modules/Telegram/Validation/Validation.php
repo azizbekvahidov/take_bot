@@ -42,33 +42,19 @@ class Validation
     }
 
     /**
-     * @param mixed $rule
+     * @param string $rule
      * @param ...$rules
+     * @return Validation
      */
-    public function check($rule, ...$rules): Validation
+    public function check(string $rule, ...$rules): Validation
     {
-        if (!is_array($rule)) {
+        $check_rule = explode(':', $rule);
+        $method = $check_rule[0];
+        $this->$method(($check_rule[1] ?? null));
+        foreach ($rules as $rule) {
             $check_rule = explode(':', $rule);
             $method = $check_rule[0];
             $this->$method(($check_rule[1] ?? null));
-        }
-        return $this;
-    }
-
-
-    /**
-     * @param string|null $check
-     * @return Validation
-     */
-    private function in(?string $check = null): Validation
-    {
-        $check_list = is_null($check) ? [] : explode(",", $check);
-
-        if (!in_array($this->text, $check_list) || empty($check_list)) {
-            $this->is_failed = true;
-            array_push($this->error_details, [
-                __('Boshqa ma\'lumot kiriting')
-            ]);
         }
         return $this;
     }
@@ -89,13 +75,27 @@ class Validation
         return $this->error_details;
     }
 
+
+    /**
+     * @param string|null $check
+     * @return Validation
+     */
+    private function in(?string $check = null): Validation
+    {
+        $check_list = is_null($check) ? [] : explode(",", $check);
+
+        if (!in_array($this->text, $check_list) || empty($check_list)) {
+            $this->is_failed = true;
+            array_push($this->error_details, __('Boshqa ma\'lumot kiriting'));
+        }
+        return $this;
+    }
+
     public function name(): Validation
     {
         if (preg_match("/[^A-Za-zА-Яа-яЁё\s]/u", $this->text)) {
             $this->is_failed = true;
-            array_push($this->error_details, [
-                __('Ism(familiya)ngizni to\'g\'ri kiriting')
-            ]);
+            array_push($this->error_details, __('Ism(familiya)ngizni to\'g\'ri kiriting'));
         }
 
         return $this;
@@ -105,9 +105,15 @@ class Validation
     {
         if (is_null($check) || !preg_match($check, $this->text)) {
             $this->is_failed = true;
-            array_push($this->error_details, [
-                __('T\'g\'ri namuna asosida kiriting')
-            ]);
+            array_push($this->error_details, __('To\'g\'ri namuna asosida kiriting'));
+        }
+    }
+
+    private function isContact(?string $check = null)
+    {
+        if (!boolval($check)) {
+            $this->is_failed = true;
+            array_push($this->error_details, __('Iltimos, "Raqamni ulashish" tugmasini bosing'));
         }
     }
 }

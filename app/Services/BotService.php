@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Constants\MessageCommentConstants;
 use App\Constants\MessageTypeConstants;
 use App\Models\Action;
-use App\Models\BotUser;
 use App\Modules\Telegram\MessageLog;
 use App\Modules\Telegram\ReplyMarkup;
 use App\Modules\Telegram\Telegram;
@@ -58,11 +58,14 @@ class BotService
     public function init()
     {
 
+        $this->setLocale();
         if ($this->updates->isChatMember()) {
             $this->bot_user->alterChatMember($this->updates->myChatMember()->newChatMember()->status());
             return;
-        } elseif (!$this->bot_user->isMember()) {
-            $this->bot_user->alterChatMember('member');
+        } elseif (!is_null($this->bot_user->fetchUser())) {
+            if (!$this->bot_user->isMember()) {
+                $this->bot_user->alterChatMember('member');
+            }
         }
 
         if (!$this->bot_user->isRegistrationFinished()) {
@@ -95,7 +98,7 @@ class BotService
             'text' => __("Assalomu alaykum"),
             'reply_markup' => $keyboard->keyboard(Keyboards::sendMainMenu())
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::MAIN_MENU);
+        (new MessageLog($message))->createLog(MessageTypeConstants::MAIN_MENU, MessageCommentConstants::MAIN_MENU);
 
         if ($message['ok']) {
             $this->action()->update([
@@ -103,5 +106,27 @@ class BotService
                 'sub_action' => null
             ]);
         }
+    }
+
+    /**
+     * Метод задаёт язык для программы
+     */
+    private function setLocale()
+    {
+        $bot_user = $this->bot_user->fetchUser();
+        $language = $bot_user ? $bot_user->language : "ru";
+        app()->setLocale($language);
+    }
+
+    protected function sendErrorMessages()
+    {
+        $message_text = "";
+        foreach ($this->validation->details() as $detail) {
+            $message_text .= $message_text ? PHP_EOL . $detail : $detail;
+        }
+        $this->telegram->send('sendMessage', [
+            'chat_id' => $this->chat_id,
+            'text' => $message_text
+        ]);
     }
 }

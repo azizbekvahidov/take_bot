@@ -93,6 +93,14 @@ class Message
     }
 
     /**
+     * @return string
+     */
+    public function getContact(): string
+    {
+        return $this->isContact() ? $this->contact()->phoneNumber() : $this->getText();
+    }
+
+    /**
      * @return bool
      */
     public function isFile(): bool

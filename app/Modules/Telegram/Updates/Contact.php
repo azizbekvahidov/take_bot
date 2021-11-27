@@ -17,9 +17,9 @@ class Contact
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function phoneNumber()
+    public function phoneNumber(): string
     {
         return $this->contact['phone_number'];
     }
