@@ -85,13 +85,11 @@ class Message
     }
 
     /**
-     * @return string
+     * @return Contact
      */
-    public function getContact(): string
+    public function contact(): Contact
     {
-        return $this->isContact()
-            ? preg_replace('/\+/', '', $this->message['contact']['phone_number'])
-            : preg_replace('/\+|\s|\(|\)|-/', '', $this->getText());
+        return new Contact($this->message['contact']);
     }
 
     /**

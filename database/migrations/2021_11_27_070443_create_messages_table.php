@@ -19,6 +19,7 @@ class CreateMessagesTable extends Migration
             $table->text('message')->nullable();
             $table->string('bot_user_id')->nullable();
             $table->string('message_type')->nullable();
+            $table->text('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

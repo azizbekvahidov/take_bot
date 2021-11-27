@@ -18,7 +18,16 @@ class CreateBotUsersTable extends Migration
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
             $table->string('username')->nullable();
-            $table->boolean('is_finished')->nullable();
+            $table->boolean('is_finished')->default(false);
+            $table->string('language')->nullable();
+            $table->enum('status', [
+                'creator',
+                'administrator',
+                'member',
+                'restricted',
+                'kicked',
+                'left'
+            ])->default('member');
             $table->timestamps();
         });
     }

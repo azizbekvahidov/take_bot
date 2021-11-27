@@ -31,4 +31,11 @@ class Chat
         return $this->chat['id'];
     }
 
+    /**
+     * @return string|null
+     */
+    public function username(): ?string
+    {
+        return $this->chat['username'];
+    }
 }

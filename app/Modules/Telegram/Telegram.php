@@ -51,12 +51,22 @@ class Telegram
         return new WebhookUpdates(file_get_contents('php://input'));
     }
 
+    /**
+     * @param array $params
+     * @return array|mixed
+     */
+    public function getUpdates(array $params = []): array
+    {
+        $base_url = $this->setMethod('getUpdates');
+        $request = Http::get($base_url, $params);
+        return $request->json();
+    }
+
     public function send(string $method, array $params)
     {
-        $this->setMethod($method);
+        $base_url = $this->setMethod($method);
 
-        $request = Http::get($this->base_url, $params);
-
+        $request = Http::get($base_url, $params);
         if ($request->successful()) {
             return $request->json();
         } else {
@@ -66,11 +76,11 @@ class Telegram
 
     /**
      * @param string $method
-     * @return void
+     * @return string
      */
-    private function setMethod(string $method): void
+    private function setMethod(string $method): string
     {
-        $this->base_url = str_replace('{method}', $method, $this->base_url);
+        return str_replace('{method}', $method, $this->base_url);
     }
 
     /**
@@ -86,5 +96,10 @@ class Telegram
                 'error' => $request
             ])
         ]);
+    }
+
+    public function getToken()
+    {
+        return $this->token;
     }
 }

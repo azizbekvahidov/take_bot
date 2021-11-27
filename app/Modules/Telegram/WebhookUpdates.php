@@ -6,6 +6,7 @@ namespace App\Modules\Telegram;
 
 use App\Modules\Telegram\Updates\CallbackQuery;
 use App\Modules\Telegram\Updates\Message;
+use App\Modules\Telegram\Updates\MyChatMember;
 
 class WebhookUpdates
 {
@@ -89,5 +90,49 @@ class WebhookUpdates
     public function callbackQuery(): CallbackQuery
     {
         return new CallbackQuery($this->updates['callback_query']);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isChatMember(): bool
+    {
+        return isset($this->updates['my_chat_member']);
+    }
+
+    /**
+     * @return MyChatMember
+     */
+    public function myChatMember(): MyChatMember
+    {
+        return new MyChatMember($this->updates['my_chat_member']);
+    }
+
+    /**
+     * @return null|int
+     */
+    public function chat(): ?int
+    {
+        switch ($this->getMethod()) {
+            case 'message':
+                return $this->message()->chat()->id();
+            case 'my_chat_member':
+                return $this->myChatMember()->chat()->id();
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * @return null|string
+     */
+    public function text(): ?string
+    {
+        switch ($this->getMethod()) {
+            case 'message':
+                return $this->message()->getText();
+            default:
+                return null;
+        }
     }
 }
