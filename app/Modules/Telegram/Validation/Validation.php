@@ -33,8 +33,9 @@ class Validation
 
     /**
      * @param string $attribute
+     * @return Validation
      */
-    public function attributes(string $attribute)
+    public function attributes(string $attribute): Validation
     {
         $this->text = $attribute;
 
@@ -91,6 +92,9 @@ class Validation
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function name(): Validation
     {
         if (preg_match("/[^A-Za-zА-Яа-яЁё\s]/u", $this->text)) {
@@ -101,19 +105,31 @@ class Validation
         return $this;
     }
 
-    public function regex(?string $check = null)
+    /**
+     * @param string|null $check
+     * @return Validation
+     */
+    public function regex(?string $check = null): Validation
     {
         if (is_null($check) || !preg_match($check, $this->text)) {
             $this->is_failed = true;
             array_push($this->error_details, __('To\'g\'ri namuna asosida kiriting'));
         }
+
+        return $this;
     }
 
-    private function isContact(?string $check = null)
+    /**
+     * @param string|null $check
+     * @return Validation
+     */
+    private function isContact(?string $check = null): Validation
     {
         if (!boolval($check)) {
             $this->is_failed = true;
             array_push($this->error_details, __('Iltimos, "Raqamni ulashish" tugmasini bosing'));
         }
+
+        return $this;
     }
 }
