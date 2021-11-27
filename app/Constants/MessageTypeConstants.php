@@ -6,13 +6,13 @@ namespace App\Constants;
 
 class MessageTypeConstants
 {
-    const MAIN_MENU = 'sent main menu';
+    const MAIN_MENU = 'main_menu_message';
 
-    const REGISTER_SENT_LANGUAGES_LIST = 'register sent languages list';
+    const REGISTER_LANGUAGES_LIST = 'register_languages_list';
 
-    const REGISTER_SENT_NAME_REQUEST = 'register sent name request';
+    const REGISTER_NAME_REQUEST = 'register_name_request';
 
-    const REGISTER_SENT_PHONE_REQUEST = 'register sent phone request';
+    const REGISTER_PHONE_REQUEST = 'register_phone_request';
 
-    const REGISTER_REGISTRATION_FINISHED = 'register registration finished';
+    const REGISTER_REGISTRATION_FINISHED = 'register_finished';
 }
