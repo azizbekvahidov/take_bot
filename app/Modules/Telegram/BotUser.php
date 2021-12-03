@@ -75,10 +75,10 @@ class BotUser
 
 
     /**
-     * @return BotUserModel|null
+     * @return BotUserModel
      */
-    private function getBotUser(): ?BotUserModel
+    private function getBotUser(): BotUserModel
     {
-        return BotUserModel::where('chat_id', '=', $this->chat_id)->first();
+        return BotUserModel::firstOrCreate(['chat_id' => $this->chat_id]);
     }
 }

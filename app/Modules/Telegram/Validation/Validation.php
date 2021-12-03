@@ -51,11 +51,12 @@ class Validation
     {
         $check_rule = explode(':', $rule);
         $method = $check_rule[0];
-        $this->$method(($check_rule[1] ?? null));
+        $this->$method(($check_rule[1] ?? ''));
+
         foreach ($rules as $rule) {
             $check_rule = explode(':', $rule);
             $method = $check_rule[0];
-            $this->$method(($check_rule[1] ?? null));
+            $this->$method(($check_rule[1] ?? ''));
         }
         return $this;
     }
@@ -78,10 +79,10 @@ class Validation
 
 
     /**
-     * @param string|null $check
+     * @param string $check
      * @return Validation
      */
-    private function in(?string $check = null): Validation
+    private function in(string $check = ''): Validation
     {
         $check_list = is_null($check) ? [] : explode(",", $check);
 
@@ -95,9 +96,9 @@ class Validation
     /**
      * @return $this
      */
-    public function name(): Validation
+    private function name(): Validation
     {
-        if (preg_match("/[^A-Za-zА-Яа-яЁё\s]/u", $this->text)) {
+        if (preg_match("/[^A-ZА-ЯЁҒҚЎҲa-zа-яёўҳғқ'\s]/u", $this->text)) {
             $this->is_failed = true;
             array_push($this->error_details, __('Ism(familiya)ngizni to\'g\'ri kiriting'));
         }
@@ -106,10 +107,10 @@ class Validation
     }
 
     /**
-     * @param string|null $check
+     * @param string $check
      * @return Validation
      */
-    public function regex(?string $check = null): Validation
+    private function regex(string $check = ''): Validation
     {
         if (is_null($check) || !preg_match($check, $this->text)) {
             $this->is_failed = true;
@@ -120,16 +121,34 @@ class Validation
     }
 
     /**
-     * @param string|null $check
+     * @param string $check
      * @return Validation
      */
-    private function isContact(?string $check = null): Validation
+    private function isContact(string $check = ''): Validation
     {
         if (!boolval($check)) {
             $this->is_failed = true;
             array_push($this->error_details, __('Iltimos, "Raqamni ulashish" tugmasini bosing'));
         }
 
+        return $this;
+    }
+
+    private function amount(string $check = '')
+    {
+        if (!(double)$this->text) {
+            $this->is_failed = true;
+            array_push($this->error_details, __('Iltimos, To\'g\'ri miqdor kiriting'));
+        }
+    }
+
+    private function max(string $check = '')
+    {
+        if (mb_strlen($this->text) > $check) {
+            $this->is_failed = true;
+            // ToDo add amount to the text
+            array_push($this->error_details, __('Juda uzun matn kiritdingiz, iltimos kamroq kiriting'));
+        }
         return $this;
     }
 }

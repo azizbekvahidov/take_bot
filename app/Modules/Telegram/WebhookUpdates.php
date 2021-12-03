@@ -118,6 +118,8 @@ class WebhookUpdates
                 return $this->message()->chat()->id();
             case 'my_chat_member':
                 return $this->myChatMember()->chat()->id();
+            case 'callback_query':
+                return $this->callbackQuery()->message()->chat()->id();
             default:
                 return null;
         }
@@ -131,6 +133,8 @@ class WebhookUpdates
         switch ($this->getMethod()) {
             case 'message':
                 return $this->message()->getText();
+            case 'callback_query':
+                return $this->callbackQuery()->message()->getText();
             default:
                 return null;
         }

@@ -62,11 +62,16 @@ class Telegram
         return $request->json();
     }
 
-    public function send(string $method, array $params)
+    public function send(string $method, array $params, array $file = [])
     {
         $base_url = $this->setMethod($method);
 
-        $request = Http::get($base_url, $params);
+        if (!empty($file)) {
+            $request = Http::attach($file['type'], $file['content'], $file['name'])->post($base_url, $params);
+        } else {
+            $request = Http::post($base_url, $params);
+        }
+
         if ($request->successful()) {
             return $request->json();
         } else {

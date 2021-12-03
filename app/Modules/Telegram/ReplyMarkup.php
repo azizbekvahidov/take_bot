@@ -52,6 +52,16 @@ class ReplyMarkup
     }
 
     /**
+     * @return $this
+     */
+    public function inline(): ReplyMarkup
+    {
+        $this->is_inline = true;
+
+        return $this;
+    }
+
+    /**
      * @param array $keyboard
      * @return array|bool[]
      */
