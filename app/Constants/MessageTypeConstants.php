@@ -15,4 +15,8 @@ class MessageTypeConstants
     const REGISTER_PHONE_REQUEST = 'register_phone_request';
 
     const REGISTER_REGISTRATION_FINISHED = 'register_finished';
+
+    const INLINE_KEYBOARD = 'inline_keyboard';
+
+    const NO_KEYBOARD = 'no_keyboard';
 }
