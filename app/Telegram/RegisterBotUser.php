@@ -8,7 +8,6 @@ use App\Constants\ActionMethodConstants;
 use App\Constants\LanguageConstants;
 use App\Constants\MessageCommentConstants;
 use App\Constants\MessageTypeConstants;
-use App\Models\BotUser;
 use App\Modules\Telegram\MessageLog;
 use App\Modules\Telegram\ReplyMarkup;
 use App\Modules\Telegram\Telegram;
@@ -32,6 +31,7 @@ class RegisterBotUser extends BotService
                 'sub_action' => ActionMethodConstants::REGISTER_SEND_LANGUAGES_LIST
             ]);
         }
+
     }
 
     /**
@@ -50,18 +50,12 @@ class RegisterBotUser extends BotService
     {
         $keyboard = new ReplyMarkup(true, true);
 
-        if (is_null($this->bot_user->fetchUser())) {
-            BotUser::query()->create([
-                'chat_id' => $this->chat_id,
-            ]);
-        }
-
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
             'text' => __('Tilni kiriting'),
             'reply_markup' => $keyboard->keyboard(Keyboards::languagesList())
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_LANGUAGES_LIST, MessageCommentConstants::REGISTER_SENT_LANGUAGES_LIST);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_LANGUAGES_LIST, MessageCommentConstants::REGISTER_SENT_LANGUAGES_LIST, true);
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::REGISTER_GET_LANGUAGE_SEND_NAME_REQUEST
@@ -91,7 +85,7 @@ class RegisterBotUser extends BotService
             'text' => __('Ismingizni kiriting'),
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_NAME_REQUEST, MessageCommentConstants::REGISTER_SENT_NAME_REQUEST);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_NAME_REQUEST, MessageCommentConstants::REGISTER_SENT_NAME_REQUEST, true);
 
         if ($message['ok']) {
             $this->action()->update([
@@ -124,7 +118,7 @@ class RegisterBotUser extends BotService
 
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_PHONE_REQUEST, MessageCommentConstants::REGISTER_SENT_PHONE_REQUEST);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_PHONE_REQUEST, MessageCommentConstants::REGISTER_SENT_PHONE_REQUEST, true);
 
         if ($message['ok']) {
             $this->action()->update([
@@ -164,7 +158,7 @@ class RegisterBotUser extends BotService
             'text' => __("Siz muvaffaqiyatli registratsiyadan o'tdingiz")
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_REGISTRATION_FINISHED, MessageCommentConstants::REGISTER_REGISTRATION_FINISHED);
+        (new MessageLog($message))->createLog(MessageTypeConstants::REGISTER_REGISTRATION_FINISHED, MessageCommentConstants::REGISTER_REGISTRATION_FINISHED, true);
 
         if ($message['ok']) {
             $this->sendMainMenu();
