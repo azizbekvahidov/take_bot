@@ -15,10 +15,15 @@ class CreateBasketsTable extends Migration
     {
         Schema::create('baskets', function (Blueprint $table) {
             $table->id();
-            $table->integer('product_id')->nullable();
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable();
             $table->tinyInteger('product_type')->nullable();
             $table->double('amount')->nullable();
-            $table->string('bot_user_id');
+            $table->string('phone')->nullable();
+            $table->string('name')->nullable();
+            $table->text('address')->nullable();
+            $table->unsignedBigInteger('filial_id')->nullable();
+            $table->foreignId('bot_user_id')->nullable()->references('chat_id')->on('bot_users')->onDelete('CASCADE');
             $table->boolean('is_served')->default(false);
             $table->boolean('is_finished')->default(false);
             $table->timestamps();

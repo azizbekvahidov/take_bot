@@ -17,7 +17,7 @@ class CreateActionsTable extends Migration
             $table->id();
             $table->string('action')->nullable();
             $table->string('sub_action')->nullable();
-            $table->string('bot_user_id')->nullable();
+            $table->foreignId('bot_user_id')->nullable()->references('chat_id')->on('bot_users')->onDelete('CASCADE');
             $table->timestamps();
         });
     }

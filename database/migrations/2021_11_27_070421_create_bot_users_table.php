@@ -14,7 +14,7 @@ class CreateBotUsersTable extends Migration
     public function up()
     {
         Schema::create('bot_users', function (Blueprint $table) {
-            $table->string('chat_id')->primary();
+            $table->unsignedBigInteger('chat_id')->primary();
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
             $table->string('username')->nullable();

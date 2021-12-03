@@ -15,11 +15,13 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->string('message_id')->nullable();
+            $table->unsignedBigInteger('message_id')->nullable();
             $table->text('message')->nullable();
-            $table->string('bot_user_id')->nullable();
+            $table->foreignId('bot_user_id')->nullable()->references('chat_id')->on('bot_users')->onDelete('CASCADE');
             $table->string('message_type')->nullable();
             $table->text('comment')->nullable();
+            $table->boolean('is_bot')->default(true);
+            $table->integer('type')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
