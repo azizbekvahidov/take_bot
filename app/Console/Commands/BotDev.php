@@ -42,10 +42,11 @@ class BotDev extends Command
     public function handle()
     {
         $telegram = new Telegram();
-        $last = end($telegram->getUpdates()['result']);
-        $last_update_id = $last['update_id'];
+        $updates = $telegram->getUpdates()['result'];
+        $last = end($updates);
+        $last_update_id = $last ? $last['update_id'] : 0;
         start:
-        $updates = array_reverse($telegram->getUpdates(['offset' => $last_update_id])['result']);
+        $updates = $telegram->getUpdates(['offset' => $last_update_id])['result'];
         foreach ($updates as $update) {
             if ($last_update_id < $update['update_id']) {
                 $last_update_id = $update['update_id'];
