@@ -106,8 +106,8 @@ class Message
     public function isFile(): bool
     {
         foreach ($this->file_types as $file_type) {
-            if ($set = isset($this->message[$file_type])) {
-                return $set;
+            if (isset($this->message[$file_type])) {
+                return true;
             }
         }
         return false;

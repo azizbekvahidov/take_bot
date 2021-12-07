@@ -134,15 +134,25 @@ class Validation
         return $this;
     }
 
-    private function amount(string $check = '')
+    /**
+     * @param string $check
+     * @return Validation
+     */
+    private function amount(string $check = ''): Validation
     {
         if (!(double)$this->text) {
             $this->is_failed = true;
             array_push($this->error_details, __('Iltimos, To\'g\'ri miqdor kiriting'));
         }
+
+        return $this;
     }
 
-    private function max(string $check = '')
+    /**
+     * @param string $check
+     * @return Validation
+     */
+    private function max(string $check = ''): Validation
     {
         if (mb_strlen($this->text) > $check) {
             $this->is_failed = true;

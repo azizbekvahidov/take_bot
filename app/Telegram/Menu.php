@@ -285,7 +285,9 @@ class Menu extends BotService
             return;
         }
 
-        // ToDo: make file check
+        if ($this->updates->message()->isFile()) {
+            return;
+        }
 
         if ($this->validation->check("amount")->fails()) {
             $this->sendErrorMessages();
@@ -337,10 +339,9 @@ class Menu extends BotService
 
     public function confirmNameSendConfirmationForPhone()
     {
-        if ($this->updates->isCallbackQuery()) {
+        if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
-        // ToDo: make file check
 
 
         $name = $this->text;
@@ -371,11 +372,9 @@ class Menu extends BotService
 
     public function confirmPhoneAndCheckOrderProductList()
     {
-        if ($this->updates->isCallbackQuery()) {
+        if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
-        // ToDo: make file check
-
 
         $phone = preg_replace("/[+]/", "", $this->text);
         if ($this->text === __('Tasdiqlayman')) {
@@ -406,10 +405,9 @@ class Menu extends BotService
 
     public function getAddress()
     {
-        if ($this->updates->isCallbackQuery()) {
+        if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
-        // ToDo: make file check
 
 
         if ($this->validation->check('max:255')->fails()) {
@@ -474,17 +472,18 @@ class Menu extends BotService
 
     public function orderProducts()
     {
-        if ($this->updates->isCallbackQuery()) {
+        if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
-        // ToDo: make file check
 
-        Basket::query()->where('is_finished', '=', true)
+
+        $basket_query = Basket::query()->where('is_finished', '=', true)
             ->where('is_served', '=', false)
-            ->where('bot_user_id', '=', $this->chat_id)
-            ->update(['is_served' => true]);
+            ->where('bot_user_id', '=', $this->chat_id);
+        HttpRequest::postData($basket_query->get());
 
-        // ToDo Make product order POST request
+        $basket_query->update(['is_served' => true]);
+
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
             'text' => __('Sizning buyurtmangiz qabul qilindi, tez orada siz bilan bog\'lanamiz'),
@@ -539,7 +538,7 @@ class Menu extends BotService
                 continue;
             }
             $product_list .= PHP_EOL . PHP_EOL . "<strong>{$product->product_id}</strong>"
-                . PHP_EOL . "<strong>Miqdori:</strong> {$product->amount}";
+                . PHP_EOL . "<strong>" . __("Miqdori") . ":</strong> {$product->amount}";
         }
 
         return $product_list;
