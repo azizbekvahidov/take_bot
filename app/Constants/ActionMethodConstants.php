@@ -35,4 +35,8 @@ class ActionMethodConstants
     const MENU_GET_FILIAL = 'menu.getFilial';
 
     const MENU_ORDER_PRODUCTS = 'menu.orderProducts';
+
+    const LANGUAGE_SEND_LANGUAGES_LIST = 'language.sendLanguagesList';
+
+    const LANGUAGE_GET_LANGUAGE = 'language.getLanguage';
 }

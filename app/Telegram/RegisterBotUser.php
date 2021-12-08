@@ -40,7 +40,9 @@ class RegisterBotUser extends BotService
     public function index()
     {
         $method = explode('.', $this->action()->sub_action)[1];
-        $this->$method();
+        if (method_exists($this, $method) && !($this->updates->message()->isFile() || $this->updates->isCallbackQuery())) {
+            $this->$method();
+        }
     }
 
     /**

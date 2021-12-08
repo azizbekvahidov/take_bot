@@ -35,4 +35,6 @@ class MessageCommentConstants
     const MENU_SEND_FILIAL_LIST = 'Отправлен список филиалов';
 
     const MENU_ORDERED = 'Отправлен заказ';
+
+    const LANGUAGE_SEND_LANGUAGE_LIST = 'Отправлен список языков';
 }

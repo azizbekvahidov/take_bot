@@ -13,6 +13,9 @@ class HttpRequest
     const BASE_URL = "http://87.237.234.154/api/v1";
 
 
+    /**
+     * @return array|bool|mixed
+     */
     public static function getMenuList()
     {
         $request = Http::get(self::BASE_URL . '/menu/category');
@@ -24,6 +27,10 @@ class HttpRequest
         return !$request->successful();
     }
 
+    /**
+     * @param int $category_id
+     * @return array|bool|mixed
+     */
     public static function getProductList(int $category_id)
     {
         $request = Http::get(self::BASE_URL . "/menu/list?category_id={$category_id}");
@@ -35,6 +42,26 @@ class HttpRequest
         return !$request->successful();
     }
 
+    /**
+     * @param int $product_id
+     * @param int $type
+     * @return array|bool|mixed
+     */
+    public static function getProductDetail(int $product_id, int $type)
+    {
+        $request = Http::get(self::BASE_URL . "/product", [
+            'product_id' => $product_id,
+            'type' => $type,
+        ]);
+        if ($request->successful()) {
+            return $request->json();
+        }
+        return !$request->successful();
+    }
+
+    /**
+     * @return array|bool|mixed
+     */
     public static function getFilialList()
     {
         $request = Http::get(self::BASE_URL . "/filial");

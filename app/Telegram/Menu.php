@@ -325,7 +325,7 @@ class Menu extends BotService
             $keyboard = new ReplyMarkup(true, true);
             $message = $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,
-                'text' => __("Ismingizni tasdiqlang, {$this->bot_user->fetchUser()->name}"),
+                'text' => __("Ismingizni tasdiqlang") . ": {$this->bot_user->fetchUser()->name}",
                 'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton())
             ]);
             (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
@@ -359,7 +359,7 @@ class Menu extends BotService
         $keyboard = new ReplyMarkup(true, true);
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
-            'text' => __('Telefon raqamini tasdiqlang: ' . $this->bot_user->fetchUser()->phone()),
+            'text' => __('Telefon raqamini tasdiqlang') . ": {$this->bot_user->fetchUser()->phone()}",
             'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton())
         ]);
         (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
@@ -521,25 +521,29 @@ class Menu extends BotService
      */
     private function getOrderedProductsList(): string
     {
+        $lang = app()->getLocale();
         $product_list = "";
-
+        $total_price = 0;
         $products = Basket::query()->where('is_finished', '=', true)
             ->where('is_served', '=', false)
             ->where('bot_user_id', '=', $this->chat_id)
             ->get();
         foreach ($products as $key => $product) {
+            $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type)['data'];
             if ($key === 0) {
                 $product_list = "<strong>" . __("Manzil") . ":</strong> {$product->address}"
                     . PHP_EOL . "<strong>" . __("Ismingiz") . ":</strong> {$product->name}"
                     . PHP_EOL . "<strong>" . __("Telefon raqam") . ":</strong> {$product->phone()}"
-                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$product->filial_id}"
-                    . PHP_EOL . PHP_EOL . "<strong>{$product->product_id}</strong>"
-                    . PHP_EOL . "<strong>" . __("Miqdori") . ":</strong> {$product->amount}";
-                continue;
+                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$product->filial_id}";
             }
-            $product_list .= PHP_EOL . PHP_EOL . "<strong>{$product->product_id}</strong>"
-                . PHP_EOL . "<strong>" . __("Miqdori") . ":</strong> {$product->amount}";
+            $price = $product->amount * $product_detail['price'];
+            $total_price += $price;
+            $product_list .= PHP_EOL . PHP_EOL . "<strong>{$product_detail["name_uz"]}</strong>"
+                . PHP_EOL . "<strong>" . __("Miqdori") . ":</strong> {$product->amount}"
+                . PHP_EOL . "<strong>" . __("Narxi") . ":</strong> {$price}";
         }
+
+        $product_list .= PHP_EOL . PHP_EOL . "<strong>" . __("Umumiy narxi") . ":</strong> {$total_price}";
 
         return $product_list;
     }

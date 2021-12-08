@@ -35,13 +35,37 @@ class Keyboards
         return [
             [
                 [
-                    'text' => trans_choice("🇺🇿", 0),
+                    'text' => trans_choice("uz", 0),
                 ],
                 [
-                    'text' => trans_choice("🇷🇺", 0),
+                    'text' => trans_choice("ru", 0),
                 ],
                 [
-                    'text' => trans_choice("🇬🇧", 0),
+                    'text' => trans_choice("en", 0),
+                ],
+            ]
+        ];
+    }
+
+    public static function inlineLanguagesList(string $lang = ""): array
+    {
+        return [
+            [
+                [
+                    'text' => trans_choice("uz", $lang === 'uz' ? 1 : 0),
+                    'callback_data' => 'uz',
+                ],
+            ],
+            [
+                [
+                    'text' => trans_choice("ru", $lang === 'ru' ? 1 : 0),
+                    'callback_data' => 'ru',
+                ],
+            ],
+            [
+                [
+                    'text' => trans_choice("en", $lang === 'en' ? 1 : 0),
+                    'callback_data' => 'en',
                 ],
             ]
         ];

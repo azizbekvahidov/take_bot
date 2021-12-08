@@ -4,6 +4,7 @@
 namespace App\Constants;
 
 
+use App\Telegram\Language;
 use App\Telegram\Menu;
 use App\Telegram\RegisterBotUser;
 
@@ -13,7 +14,7 @@ class ActionConstants
 
     const MENU = Menu::class;
 
-    const ALTER_LANGUAGE = 'AlterLanguage';
+    const ALTER_LANGUAGE = Language::class;
 
     /**
      * @return array
