@@ -41,6 +41,7 @@ class BotDev extends Command
      */
     public function handle()
     {
+        $this->info("Bot started");
         $telegram = new Telegram();
         $updates = $telegram->getUpdates()['result'];
         $last = end($updates);
@@ -49,6 +50,8 @@ class BotDev extends Command
         $updates = $telegram->getUpdates(['offset' => $last_update_id])['result'];
         foreach ($updates as $update) {
             if ($last_update_id < $update['update_id']) {
+                $this->info("Request");
+
                 $last_update_id = $update['update_id'];
                 $message = new WebhookUpdates(json_encode($update));
                 $start = new BotService($telegram, $message);

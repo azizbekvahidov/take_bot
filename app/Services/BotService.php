@@ -66,17 +66,22 @@ class BotService
 
     /**
      * Входной порог бота
+     * @throws \Exception
      */
     public function init()
     {
 
         if ($this->updates->isChatMember()) {
-            $this->bot_user->alterChatMember($this->updates->myChatMember()->newChatMember()->status());
-            return;
-        } elseif (!is_null($this->bot_user->fetchUser())) {
-            if (!$this->bot_user->isMember()) {
-                $this->bot_user->alterChatMember('member');
+            if (!in_array($this->updates->myChatMember()->newChatMember()->status(), [
+                'creator',
+                'administrator',
+                'member'
+            ])) {
+                $this->bot_user->fetchUser()->delete();
+            } else {
+                $this->bot_user->alterChatMember($this->updates->myChatMember()->newChatMember()->status());
             }
+            return;
         }
 
         if (!$this->bot_user->isRegistrationFinished()) {

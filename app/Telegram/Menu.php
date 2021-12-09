@@ -524,11 +524,10 @@ class Menu extends BotService
             return;
         }
         $basket_query = Basket::query()->where('is_finished', '=', true)
-            ->where('is_served', '=', false)
             ->where('bot_user_id', '=', $this->chat_id);
         HttpRequest::postData($basket_query->get());
 
-        $basket_query->update(['is_served' => true]);
+        $basket_query->delete();
 
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
