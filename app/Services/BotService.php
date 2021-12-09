@@ -85,6 +85,10 @@ class BotService
         }
 
         if ($this->text === '/start') {
+            $this->telegram->send('sendMessage', [
+                "chat_id" => $this->chat_id,
+                'text' => __("Assalomu alaykum")
+            ]);
             $this->sendMainMenu();
         }
 
@@ -114,7 +118,7 @@ class BotService
 
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
-            'text' => __("Assalomu alaykum"),
+            'text' => __("Bo'limni tanlang"),
             'reply_markup' => $keyboard->keyboard(Keyboards::sendMainMenu())
         ]);
         (new MessageLog($message))->createLog(MessageTypeConstants::MAIN_MENU, MessageCommentConstants::MAIN_MENU);

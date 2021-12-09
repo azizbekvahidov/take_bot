@@ -74,6 +74,21 @@ class HttpRequest
     }
 
     /**
+     * @param int $filial_id
+     * @return array|bool|mixed
+     */
+    public static function getFilialDetail(int $filial_id)
+    {
+        $request = Http::get(self::BASE_URL . "/filial/{$filial_id}");
+
+        if ($request->successful()) {
+            return $request->json();
+        }
+
+        return !$request->successful();
+    }
+
+    /**
      * @param mixed $orders
      * @return array|bool|mixed
      */

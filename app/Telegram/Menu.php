@@ -105,16 +105,17 @@ class Menu extends BotService
         $list = HttpRequest::getProductList($category_id)['data'];
         $messages_list = [];
         foreach ($list as $product) {
+            $product_name = $product['product']["name_{$this->language}"] ?: $product['product']["name_uz"];
             $message = $this->telegram->send('sendPhoto', [
                 'chat_id' => $this->chat_id,
-                'caption' => "<strong>" . ($product['product']["name_{$this->language}"] ?? $product['product']["name_uz"]) . "</strong>"
+                'caption' => "<strong>" . $product_name . "</strong>"
                     . PHP_EOL . PHP_EOL . "<strong>" . __('Narxi') . ": </strong>" . $product['product']['price'] . " " . __("so'm"),
                 'reply_markup' => $keyboard->inline()->keyboard(Keyboards::product($product)),
                 'parse_mode' => "html",
             ], [
                 'type' => 'photo',
                 'content' => $this->getImage($product['product']['image']),
-                'name' => ($product['product']["name_{$this->language}"] ?? $product['product']["name_uz"])
+                'name' => $product_name
             ]);
             array_push($messages_list, $message);
         }
@@ -138,16 +139,17 @@ class Menu extends BotService
         $list = HttpRequest::getProductList($category_id)['data'];
         $messages_list = [];
         foreach ($list as $product) {
+            $product_name = $product['product']["name_{$this->language}"] ?: $product['product']["name_uz"];
             $message = $this->telegram->send('sendPhoto', [
                 'chat_id' => $this->chat_id,
-                'caption' => "<strong>" . ($product['product']["name_{$this->language}"] ?? $product['product']["name_uz"]) . "</strong>"
+                'caption' => "<strong>" . $product_name . "</strong>"
                     . PHP_EOL . PHP_EOL . "<strong>" . __('Narxi') . ": </strong>" . $product['product']['price'] . " " . __("so'm"),
                 'reply_markup' => $keyboard->inline()->keyboard(Keyboards::product($product)),
                 'parse_mode' => "html",
             ], [
                 'type' => 'photo',
                 'content' => $this->getImage($product['product']['image']),
-                'name' => ($product['product']["name_{$this->language}"] ?? $product['product']["name_uz"])
+                'name' => $product_name
             ]);
             array_push($messages_list, $message);
         }
@@ -229,7 +231,7 @@ class Menu extends BotService
         }
         $callback_data = json_decode($callback_data, true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== JSON_ERROR_NONE || !isset($callback_data['event'])) {
             $this->telegram->send('sendMessage', [
                 'chat_id' => 287956415,
                 'text' => self::class . " | getDetailsSendProductAmount: " . $this->updates->callbackQuery()->getData()
@@ -239,6 +241,7 @@ class Menu extends BotService
 
         if ($callback_data['event'] === 'product_amount_back') {
             $this->resendProductsList($callback_data['category_id']);
+            return;
         } elseif ($callback_data['event'] === 'other') {
             $this->sendCustomAmountText();
             return;
@@ -322,18 +325,23 @@ class Menu extends BotService
             $this->sendMenuList();
         } elseif ($callback_data === 'order') {
             $this->deleteMessage($this->updates->callbackQuery()->message()->getMessageId());
-            $keyboard = new ReplyMarkup(true, true);
-            $message = $this->telegram->send('sendMessage', [
-                'chat_id' => $this->chat_id,
-                'text' => __("Ismingizni tasdiqlang") . ": {$this->bot_user->fetchUser()->name}",
-                'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton())
+            $this->sendNameConfirmationRequest();
+        }
+    }
+
+    protected function sendNameConfirmationRequest()
+    {
+        $keyboard = new ReplyMarkup(true, true);
+        $message = $this->telegram->send('sendMessage', [
+            'chat_id' => $this->chat_id,
+            'text' => __("Ismingizni tasdiqlang") . ": {$this->bot_user->fetchUser()->name}",
+            'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton(false))
+        ]);
+        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
+        if ($message['ok']) {
+            $this->action()->update([
+                'sub_action' => ActionMethodConstants::MENU_CONFIRM_NAME_SEND_CONFIRMATION_FOR_PHONE
             ]);
-            (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
-            if ($message['ok']) {
-                $this->action()->update([
-                    'sub_action' => ActionMethodConstants::MENU_CONFIRM_NAME_SEND_CONFIRMATION_FOR_PHONE
-                ]);
-            }
         }
     }
 
@@ -356,6 +364,11 @@ class Menu extends BotService
         $this->updateUnServedProducts([
             'name' => $name
         ]);
+        $this->sendPhoneConfirmRequest();
+    }
+
+    protected function sendPhoneConfirmRequest()
+    {
         $keyboard = new ReplyMarkup(true, true);
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
@@ -365,16 +378,22 @@ class Menu extends BotService
         (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
         if ($message['ok']) {
             $this->action()->update([
-                'sub_action' => ActionMethodConstants::MENU_CONFIRM_PHONE_AND_CHECK_ORDER_PRODUCT_LIST
+                'sub_action' => ActionMethodConstants::MENU_CONFIRM_PHONE_AND_REQUEST_ADDRESS
             ]);
         }
     }
 
-    public function confirmPhoneAndCheckOrderProductList()
+    public function confirmPhoneAndRequestAddress()
     {
         if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
+
+        if ($this->text === __("Ortga qaytish")) {
+            $this->sendNameConfirmationRequest();
+            return;
+        }
+
 
         $phone = preg_replace("/[+]/", "", $this->text);
         if ($this->text === __('Tasdiqlayman')) {
@@ -391,9 +410,17 @@ class Menu extends BotService
             'phone' => $phone
         ]);
 
+        $this->sendAddressRequest();
+    }
+
+    protected function sendAddressRequest()
+    {
+        $this->deleteMessages(MessageTypeConstants::INLINE_KEYBOARD);
+        $keyboard = new ReplyMarkup(true, true);
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
             'text' => __("Manzilingizni kiriting"),
+            'reply_markup' => $keyboard->keyboard(Keyboards::backButton())
         ]);
         (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_ADDRESS_REQUEST);
         if ($message['ok']) {
@@ -409,6 +436,10 @@ class Menu extends BotService
             return;
         }
 
+        if ($this->text === __('Ortga qaytish')) {
+            $this->sendPhoneConfirmRequest();
+            return;
+        }
 
         if ($this->validation->check('max:255')->fails()) {
             $this->sendErrorMessages();
@@ -419,21 +450,7 @@ class Menu extends BotService
             'address' => $this->text
         ]);
 
-
-        $keyboard = new ReplyMarkup();
-
-        $message = $this->telegram->send('sendMessage', [
-            'chat_id' => $this->chat_id,
-            'text' => __("Filialni tanlang"),
-            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::getFilialList()),
-            'parse_mode' => 'html'
-        ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::INLINE_KEYBOARD, MessageCommentConstants::MENU_SEND_FILIAL_LIST);
-        if ($message['ok']) {
-            $this->action()->update([
-                'sub_action' => ActionMethodConstants::MENU_GET_FILIAL
-            ]);
-        }
+        $this->sendFilialList();
     }
 
     /**
@@ -442,12 +459,17 @@ class Menu extends BotService
     public function getFilial()
     {
 
-
         if (!$this->updates->isCallbackQuery()) {
             return;
         }
+        $callback_data = $this->updates->callbackQuery()->getData();
+        if ($callback_data === "filial_back") {
+            $this->sendAddressRequest();
+            return;
+        }
+
         $this->updateUnServedProducts([
-            'filial_id' => $this->updates->callbackQuery()->getData()
+            'filial_id' => $callback_data
         ]);
 
         $this->deleteMessage($this->updates->callbackQuery()->message()->getMessageId());
@@ -470,13 +492,37 @@ class Menu extends BotService
         }
     }
 
+    protected function sendFilialList()
+    {
+        $keyboard = new ReplyMarkup();
+
+        $message = $this->telegram->send('sendMessage', [
+            'chat_id' => $this->chat_id,
+            'text' => __("Filialni tanlang"),
+            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::getFilialList()),
+            'parse_mode' => 'html'
+        ]);
+        (new MessageLog($message))->createLog(MessageTypeConstants::INLINE_KEYBOARD, MessageCommentConstants::MENU_SEND_FILIAL_LIST);
+        if ($message['ok']) {
+            $this->action()->update([
+                'sub_action' => ActionMethodConstants::MENU_GET_FILIAL
+            ]);
+        }
+    }
+
     public function orderProducts()
     {
         if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
 
-
+        if ($this->text === __('Ortga qaytish')) {
+            $this->sendFilialList();
+            return;
+        }
+        if ($this->text !== __("Buyurtma berish")) {
+            return;
+        }
         $basket_query = Basket::query()->where('is_finished', '=', true)
             ->where('is_served', '=', false)
             ->where('bot_user_id', '=', $this->chat_id);
@@ -530,15 +576,17 @@ class Menu extends BotService
             ->get();
         foreach ($products as $key => $product) {
             $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type)['data'];
+            $product_name = $product_detail["name_{$lang}"] ?: $product_detail["name_uz"];
             if ($key === 0) {
+                $filial = HttpRequest::getFilialDetail($product->filial_id)['data'];
                 $product_list = "<strong>" . __("Manzil") . ":</strong> {$product->address}"
                     . PHP_EOL . "<strong>" . __("Ismingiz") . ":</strong> {$product->name}"
                     . PHP_EOL . "<strong>" . __("Telefon raqam") . ":</strong> {$product->phone()}"
-                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$product->filial_id}";
+                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$filial['name']}";
             }
             $price = $product->amount * $product_detail['price'];
             $total_price += $price;
-            $product_list .= PHP_EOL . PHP_EOL . "<strong>{$product_detail["name_uz"]}</strong>"
+            $product_list .= PHP_EOL . PHP_EOL . "<strong>{$product_name}</strong>"
                 . PHP_EOL . "<strong>" . __("Miqdori") . ":</strong> {$product->amount}"
                 . PHP_EOL . "<strong>" . __("Narxi") . ":</strong> {$price}";
         }

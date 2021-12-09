@@ -92,9 +92,11 @@ class Keyboards
         $last_position = count($list) - 1;
         $return_array = [];
         $temp_array = [];
+        $language = app()->getLocale();
         foreach ($list as $key => $item) {
+            $name = $item["name_{$language}"] ?: $item["name_uz"];
             array_push($temp_array, [
-                'text' => $item["name_uz"],
+                'text' => $name,
                 'callback_data' => "category={$item['id']}"
             ]);
             if (count($temp_array) % 2 == 0 || $key === $last_position) {
@@ -148,32 +150,16 @@ class Keyboards
         return [
             [
                 [
-                    'text' => 0.5,
-                    'callback_data' => json_encode(['event' => 0.5]),
-                ],
-                [
                     'text' => 1,
                     'callback_data' => json_encode(['event' => 1]),
-                ],
-            ],
-            [
-                [
-                    'text' => 1.5,
-                    'callback_data' => json_encode(['event' => 1.5]),
                 ],
                 [
                     'text' => 2,
                     'callback_data' => json_encode(['event' => 2]),
                 ],
-            ],
-            [
                 [
-                    'text' => 2.5,
-                    'callback_data' => json_encode(['event' => 2.5]),
-                ],
-                [
-                    'text' => __('Boshqa'),
-                    'callback_data' => json_encode(['event' => 'other']),
+                    'text' => 3,
+                    'callback_data' => json_encode(['event' => 3]),
                 ],
             ],
             [
@@ -227,15 +213,23 @@ class Keyboards
     /**
      * @return \array[][]
      */
-    public static function sendConfirmButton(): array
+    public static function sendConfirmButton(bool $send_back_button = true): array
     {
-        return [
+        $buttons = [
             [
                 [
                     'text' => __('Tasdiqlayman')
-                ]
+                ],
             ]
         ];
+
+        if ($send_back_button) {
+            array_unshift($buttons[0], [
+                'text' => __('Ortga qaytish')
+            ]);
+        }
+
+        return $buttons;
     }
 
     public static function getFilialList(): array
@@ -254,9 +248,31 @@ class Keyboards
                 array_push($return_array, $temp_array);
                 $temp_array = [];
             }
+            if ($key === $last_position) {
+                array_push($return_array, [
+                    [
+                        'text' => __("Ortga qaytish"),
+                        'callback_data' => "filial_back"
+                    ]
+                ]);
+            }
         }
         return $return_array;
 
+    }
+
+    /**
+     * @return \array[][]
+     */
+    public static function backButton(): array
+    {
+        return [
+            [
+                [
+                    'text' => __("Ortga qaytish")
+                ]
+            ]
+        ];
     }
 
     public static function orderProducts(): array
@@ -264,8 +280,11 @@ class Keyboards
         return [
             [
                 [
+                    'text' => __('Ortga qaytish')
+                ],
+                [
                     'text' => __('Buyurtma berish')
-                ]
+                ],
             ]
         ];
     }
