@@ -239,17 +239,21 @@ class Menu extends BotService
             return;
         }
 
-        if ($callback_data['event'] === 'product_amount_back') {
-            $this->resendProductsList($callback_data['category_id']);
-            return;
-        } elseif ($callback_data['event'] === 'other') {
-            $this->sendCustomAmountText();
-            return;
+        try {
+            if ($callback_data['event'] === 'product_amount_back') {
+                $this->resendProductsList($callback_data['category_id']);
+                return;
+            } elseif ($callback_data['event'] === 'other') {
+                $this->sendCustomAmountText();
+                return;
+            }
+
+            $this->saveProductAmount($callback_data['event']);
+
+            $this->giveAnotherProductSuggestionOrFinish($this->updates->callbackQuery()->message()->getMessageId());
+        } catch (Exception $e) {
+            info('error', $e->getTrace());
         }
-
-        $this->saveProductAmount($callback_data['event']);
-
-        $this->giveAnotherProductSuggestionOrFinish($this->updates->callbackQuery()->message()->getMessageId());
 
     }
 
