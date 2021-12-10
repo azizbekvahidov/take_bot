@@ -11,5 +11,5 @@
 - add BOT_TOKEN to .env
 - configure database configurations in .env
 - php artisan migrate
-- Url for webhook: https://api.telegram.org/bot{token}/setWebhook?url={url}
+- Url for webhook: https://api.telegram.org/bot{token}/setWebhook?url={url}/api/telegram-bot-connect
 - Or run the bot: php artisan bot:run (if webhook is set,this method does not work)
