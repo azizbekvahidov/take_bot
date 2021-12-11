@@ -308,13 +308,17 @@ class Keyboards
                 ]
             ]
         ];
+        $temp_array = [];
+        $last_index = count($product_ids) - 1;
         foreach ($product_ids as $key => $id) {
-            array_push($return_data, [
-                [
-                    'text' => ($key + 1) . " ❌",
-                    'callback_data' => $id
-                ]
+            array_push($temp_array, [
+                'text' => ($key + 1) . " ❌",
+                'callback_data' => $id
             ]);
+            if (count($temp_array) === 5 || $key == $last_index) {
+                array_push($return_data, $temp_array);
+                $temp_array = [];
+            }
         }
         array_push($return_data, [
             [

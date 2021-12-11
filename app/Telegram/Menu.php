@@ -59,10 +59,6 @@ class Menu extends BotService
 
     protected function sendMenuList()
     {
-        $this->basket = Basket::query()->firstOrCreate([
-            'bot_user_id' => $this->chat_id,
-            'is_finished' => false
-        ]);
         $this->deleteMessages([MessageTypeConstants::INLINE_KEYBOARD]);
         $keyboard = new ReplyMarkup(false, false, true);
 
@@ -97,12 +93,17 @@ class Menu extends BotService
             return;
         }
         $category_id = (int)explode('=', $callback_query->getData())[1];
-        $this->basket->update([
-            'category_id' => $category_id
-        ]);
+
         $keyboard = new ReplyMarkup();
 
         $list = HttpRequest::getProductList($category_id)['data'];
+        if (empty($list)) {
+            $this->telegram->send('sendMessage', [
+                'chat_id' => $this->chat_id,
+                'text' => __("Bo'sh")
+            ]);
+            return;
+        }
         $messages_list = [];
         foreach ($list as $product) {
             $product_name = $product['product']["name_{$this->language}"] ?: $product['product']["name_uz"];
@@ -187,7 +188,9 @@ class Menu extends BotService
             ]);
             return;
         }
-        $this->basket->update($product_details);
+
+        $this->updateProduct($product_details);
+
         $keyboard = new ReplyMarkup();
         $this->deleteMessages(MessageTypeConstants::INLINE_KEYBOARD, $callback_query->message()->getMessageId());
         $message = $this->telegram->send('editMessageCaption', [
@@ -202,6 +205,15 @@ class Menu extends BotService
                 'sub_action' => ActionMethodConstants::MENU_GET_DETAILS_SEND_PRODUCT_AMOUNT
             ]);
         }
+    }
+
+
+    protected function updateProduct($product_detail)
+    {
+        $product_detail['bot_user_id'] = $this->chat_id;
+        $this->basket = Basket::query()->updateOrCreate($product_detail, [
+            'is_finished' => false
+        ]);
     }
 
     private function resendProductAmountList()
@@ -407,8 +419,9 @@ class Menu extends BotService
 
     private function saveProductAmount($amount)
     {
+        $basket_amount = $this->basket->amount;
         $this->basket->update([
-            'amount' => $amount,
+            'amount' => $basket_amount + $amount,
             'is_finished' => true
         ]);
     }
