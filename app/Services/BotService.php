@@ -70,7 +70,6 @@ class BotService
      */
     public function init()
     {
-
         if ($this->updates->isChatMember()) {
             if (!in_array($this->updates->myChatMember()->newChatMember()->status(), [
                 'creator',
