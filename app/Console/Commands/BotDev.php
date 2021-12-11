@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Modules\Telegram\Telegram;
-use App\Modules\Telegram\Updates\Message;
 use App\Modules\Telegram\WebhookUpdates;
 use App\Services\BotService;
 use Illuminate\Console\Command;
@@ -37,7 +36,7 @@ class BotDev extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
@@ -54,7 +53,6 @@ class BotDev extends Command
             foreach ($updates as $update) {
                 if ($last_update_id < $update['update_id']) {
                     $this->info("Request");
-
                     $last_update_id = $update['update_id'];
                     $message = new WebhookUpdates(json_encode($update));
                     $start = new BotService($telegram, $message);
