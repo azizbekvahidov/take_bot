@@ -182,17 +182,4 @@ class Basket extends BotService
     {
         (new ConfirmDataForOrder($this->telegram, $this->updates))->sendNameConfirmationRequest();
     }
-
-    protected function sendDataToServer()
-    {
-        HttpRequest::postData($this->basket());
-        \App\Models\Basket::query()
-            ->where('is_finished', '=', true)
-            ->where('bot_user_id', '=', $this->chat_id)->delete();
-        $this->telegram->send('sendMessage', [
-            'chat_id' => $this->chat_id,
-            'text' => __('Sizning buyurtmangiz qabul qilindi, tez orada siz bilan bog\'lanamiz'),
-        ]);
-        $this->sendMainMenu();
-    }
 }
