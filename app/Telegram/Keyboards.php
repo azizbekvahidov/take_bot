@@ -20,6 +20,11 @@ class Keyboards
                 [
                     'text' => __(MainMenuButtons::MENU)
                 ],
+            ],
+            [
+                [
+                    'text' => __(MainMenuButtons::BASKET)
+                ],
                 [
                     'text' => __(MainMenuButtons::ALTER_LANGUAGE)
                 ],
@@ -287,5 +292,36 @@ class Keyboards
                 ],
             ]
         ];
+    }
+
+    /**
+     * @param array $product_ids
+     * @return array
+     */
+    public static function getOrderedProductsList(array $product_ids): array
+    {
+        $return_data = [
+            [
+                [
+                    'text' => __('Buyurtma berish') . " ✅",
+                    'callback_data' => 'order'
+                ]
+            ]
+        ];
+        foreach ($product_ids as $key => $id) {
+            array_push($return_data, [
+                [
+                    'text' => ($key + 1) . " ❌",
+                    'callback_data' => $id
+                ]
+            ]);
+        }
+        array_push($return_data, [
+            [
+                'text' => __("Ortga qaytish"),
+                'callback_data' => 'basket_back'
+            ]
+        ]);
+        return $return_data;
     }
 }

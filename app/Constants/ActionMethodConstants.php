@@ -39,4 +39,8 @@ class ActionMethodConstants
     const LANGUAGE_SEND_LANGUAGES_LIST = 'language.sendLanguagesList';
 
     const LANGUAGE_GET_LANGUAGE = 'language.getLanguage';
+
+    const BASKET_SEND_BASKET_LIST = 'basket.sendBasketList';
+
+    const BASKET_GET_PRODUCT = 'basket.getProduct';
 }

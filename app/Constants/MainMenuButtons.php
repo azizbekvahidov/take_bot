@@ -10,6 +10,8 @@ class MainMenuButtons
 
     const ALTER_LANGUAGE = "Tilni o'zgartirish";
 
+    const BASKET = 'Savat';
+
     /**
      * @return array
      */
@@ -17,7 +19,8 @@ class MainMenuButtons
     {
         return [
             __(self::MENU),
-            __(self::ALTER_LANGUAGE)
+            __(self::ALTER_LANGUAGE),
+            __(self::BASKET)
         ];
     }
 }

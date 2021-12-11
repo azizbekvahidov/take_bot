@@ -37,4 +37,6 @@ class MessageCommentConstants
     const MENU_ORDERED = 'Отправлен заказ';
 
     const LANGUAGE_SEND_LANGUAGE_LIST = 'Отправлен список языков';
+
+    const BASKET_SENT_BASKET_LIST = 'Отправлен список корзины';
 }
