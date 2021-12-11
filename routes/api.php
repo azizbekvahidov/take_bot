@@ -18,4 +18,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('telegram-bot-connect', 'Api\\TelegramController');
+Route::post('telegram-bot-connect', 'Api/TelegramController');
