@@ -12,6 +12,8 @@ use App\Modules\Cafe\HttpRequest;
 use App\Modules\Telegram\MessageLog;
 use App\Modules\Telegram\ReplyMarkup;
 use App\Services\BotService;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ConfirmDataForOrder extends BotService
 {
@@ -61,7 +63,88 @@ class ConfirmDataForOrder extends BotService
         (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
         if ($message['ok']) {
             $this->action()->update([
-                'sub_action' => ActionMethodConstants::MENU_CONFIRM_PHONE_AND_REQUEST_ADDRESS
+                'sub_action' => ActionMethodConstants::MENU_CONFIRM_PHONE_AND_REQUEST_ORDER_TYPE
+            ]);
+        }
+    }
+
+    public function confirmPhoneAndRequestOrderType()
+    {
+        if ($this->text === __("Ortga qaytish")) {
+            $this->sendNameConfirmationRequest();
+            return;
+        }
+
+
+        $phone = preg_replace("/[+]/", "", $this->text);
+        if ($this->text === __('Tasdiqlayman')) {
+            $phone = $this->bot_user->fetchUser()->phone;
+        }
+
+        if ($this->validation->attributes($phone)->check('regex:/^\+?998\d{9}$/')->fails()) {
+            $this->sendErrorMessages();
+            return;
+        }
+
+
+        $this->updateUnServedProducts([
+            'phone' => $phone
+        ]);
+        $this->sendOrderTypeRequest();
+    }
+
+    protected function sendOrderTypeRequest()
+    {
+        $this->deleteMessages(MessageTypeConstants::INLINE_KEYBOARD);
+        $keyboard = new ReplyMarkup(true, true);
+
+        $message = $this->telegram->send('sendMessage', [
+            'chat_id' => $this->chat_id,
+            'text' => __('Buyurtma turini tanlang'),
+            'reply_markup' => $keyboard->keyboard(Keyboards::orderTypes())
+        ]);
+        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_ADDRESS_REQUEST);
+        if ($message['ok']) {
+            $this->action()->update([
+                'sub_action' => ActionMethodConstants::MENU_CONFIRM_ORDER_TYPE_GO_NEXT_STEP
+            ]);
+        }
+    }
+
+    public function confirmOrderTypeGoNextStep()
+    {
+        if ($this->text === __('Ortga qaytish')) {
+            $this->sendPhoneConfirmRequest();
+            return;
+        }
+
+        $params = [
+            'is_delivery' => false
+        ];
+        if ($this->text === __('Olib ketish')) {
+            $params['address'] = null;
+            $this->sendFilialList();
+        } elseif ($this->text === __('Yetkazib berish')) {
+            $params['is_delivery'] = true;
+            $this->sendAddressRequest();
+        }
+        $this->updateUnServedProducts($params);
+
+    }
+
+    protected function sendAddressRequest()
+    {
+        $this->deleteMessages(MessageTypeConstants::INLINE_KEYBOARD);
+        $keyboard = new ReplyMarkup(true, true);
+        $message = $this->telegram->send('sendMessage', [
+            'chat_id' => $this->chat_id,
+            'text' => __("Manzilingizni kiriting"),
+            'reply_markup' => $keyboard->keyboard(Keyboards::backButton())
+        ]);
+        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_ADDRESS_REQUEST);
+        if ($message['ok']) {
+            $this->action()->update([
+                'sub_action' => ActionMethodConstants::MENU_GET_ADDRESS
             ]);
         }
     }
@@ -69,7 +152,7 @@ class ConfirmDataForOrder extends BotService
     public function getAddress()
     {
         if ($this->text === __('Ortga qaytish')) {
-            $this->sendPhoneConfirmRequest();
+            $this->sendOrderTypeRequest();
             return;
         }
 
@@ -103,54 +186,16 @@ class ConfirmDataForOrder extends BotService
         }
     }
 
-    public function confirmPhoneAndRequestAddress()
-    {
-        if ($this->text === __("Ortga qaytish")) {
-            $this->sendNameConfirmationRequest();
-            return;
-        }
-
-
-        $phone = preg_replace("/[+]/", "", $this->text);
-        if ($this->text === __('Tasdiqlayman')) {
-            $phone = $this->bot_user->fetchUser()->phone;
-        }
-
-        if ($this->validation->attributes($phone)->check('regex:/^\+?998\d{9}$/')->fails()) {
-            $this->sendErrorMessages();
-            return;
-        }
-
-
-        $this->updateUnServedProducts([
-            'phone' => $phone
-        ]);
-
-        $this->sendAddressRequest();
-    }
-
-    protected function sendAddressRequest()
-    {
-        $this->deleteMessages(MessageTypeConstants::INLINE_KEYBOARD);
-        $keyboard = new ReplyMarkup(true, true);
-        $message = $this->telegram->send('sendMessage', [
-            'chat_id' => $this->chat_id,
-            'text' => __("Manzilingizni kiriting"),
-            'reply_markup' => $keyboard->keyboard(Keyboards::backButton())
-        ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_ADDRESS_REQUEST);
-        if ($message['ok']) {
-            $this->action()->update([
-                'sub_action' => ActionMethodConstants::MENU_GET_ADDRESS
-            ]);
-        }
-    }
-
     public function getFilial()
     {
         $callback_data = $this->updates->callbackQuery()->getData();
         if ($callback_data === "filial_back") {
-            $this->sendAddressRequest();
+            $is_delivery = $this->getBasket()->is_delivery;
+            if ($is_delivery) {
+                $this->sendAddressRequest();
+            } else {
+                $this->sendOrderTypeRequest();
+            }
             return;
         }
 
@@ -211,6 +256,7 @@ class ConfirmDataForOrder extends BotService
     {
         $lang = app()->getLocale();
         $product_list = "";
+        $order_prepare_time = "";
         $total_price = 0;
         $products = Basket::query()->where('is_finished', '=', true)
             ->where('is_served', '=', false)
@@ -220,11 +266,19 @@ class ConfirmDataForOrder extends BotService
             $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type)['data'];
             $product_name = $product_detail["name_{$lang}"] ?: $product_detail["name_uz"];
             if ($key === 0) {
+                if ($product->is_delivery) {
+                    $order_type = __('Yetkazib berish');
+                    $order_prepare_time = __("Buyurtmangiz 20-40 daqiqa ichida yetkazib beriladi");
+                } else {
+                    $order_type = __('Olib ketish');
+                    $order_prepare_time = __("Buyurtmangiz 5-20 daqiqa ichida tayyor bo'ladi");
+                }
                 $filial = HttpRequest::getFilialDetail($product->filial_id)['data'];
                 $product_list = "<strong>" . __("Manzil") . ":</strong> {$product->address}"
                     . PHP_EOL . "<strong>" . __("Ismingiz") . ":</strong> {$product->name}"
                     . PHP_EOL . "<strong>" . __("Telefon raqam") . ":</strong> {$product->phone()}"
-                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$filial['name']}";
+                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$filial['name']}"
+                    . PHP_EOL . "<strong>" . __("Buyurtma turi") . ":</strong> {$order_type}";
             }
             $price = $product->amount * $product_detail['price'];
             $total_price += $price;
@@ -233,7 +287,8 @@ class ConfirmDataForOrder extends BotService
                 . PHP_EOL . "<strong>" . __("Narxi") . ":</strong> {$price}";
         }
 
-        $product_list .= PHP_EOL . PHP_EOL . "<strong>" . __("Umumiy narxi") . ":</strong> {$total_price}";
+        $product_list .= PHP_EOL . PHP_EOL . "<strong>" . __("Umumiy narxi") . ":</strong> {$total_price}"
+            . PHP_EOL . PHP_EOL . "<strong>{$order_prepare_time}</strong>";
 
         return $product_list;
     }
@@ -246,4 +301,14 @@ class ConfirmDataForOrder extends BotService
             ->update($params);
     }
 
+    /**
+     * @return Builder|Model|object|null
+     */
+    private function getBasket()
+    {
+        return Basket::query()->where('is_finished', '=', true)
+            ->where('is_served', '=', false)
+            ->where('bot_user_id', '=', $this->chat_id)
+            ->first(['id', 'name', 'address', 'phone', 'is_delivery']);
+    }
 }

@@ -28,7 +28,9 @@ class ActionMethodConstants
 
     const MENU_CONFIRM_NAME_SEND_CONFIRMATION_FOR_PHONE = 'menu.confirmNameSendConfirmationForPhone';
 
-    const MENU_CONFIRM_PHONE_AND_REQUEST_ADDRESS = 'menu.confirmPhoneAndRequestAddress';
+    const MENU_CONFIRM_PHONE_AND_REQUEST_ORDER_TYPE = 'menu.confirmPhoneAndRequestOrderType';
+
+    const MENU_CONFIRM_ORDER_TYPE_GO_NEXT_STEP = 'menu.confirmOrderTypeGoNextStep';
 
     const MENU_GET_ADDRESS = 'menu.getAddress';
 

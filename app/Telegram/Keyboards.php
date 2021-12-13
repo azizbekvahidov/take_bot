@@ -315,7 +315,7 @@ class Keyboards
                 'text' => ($key + 1) . " ❌",
                 'callback_data' => $id
             ]);
-            if (count($temp_array) === 5 || $key == $last_index) {
+            if (count($temp_array) === 4 || $key == $last_index) {
                 array_push($return_data, $temp_array);
                 $temp_array = [];
             }
@@ -327,5 +327,24 @@ class Keyboards
             ]
         ]);
         return $return_data;
+    }
+
+    public static function orderTypes(): array
+    {
+        return [
+            [
+                [
+                    'text' => __('Olib ketish')
+                ],
+                [
+                    'text' => __('Yetkazib berish')
+                ],
+            ],
+            [
+                [
+                    'text' => __('Ortga qaytish')
+                ]
+            ]
+        ];
     }
 }

@@ -127,15 +127,23 @@ class Basket extends BotService
         (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmNameSendConfirmationForPhone();
     }
 
-    public function confirmPhoneAndRequestAddress()
+    public function confirmPhoneAndRequestOrderType()
     {
         if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
 
-        (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmPhoneAndRequestAddress();
+        (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmPhoneAndRequestOrderType();
     }
 
+    public function confirmOrderTypeGoNextStep()
+    {
+        if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
+            return;
+        }
+
+        (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmOrderTypeGoNextStep();
+    }
 
     public function getAddress()
     {

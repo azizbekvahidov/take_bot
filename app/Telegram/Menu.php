@@ -211,6 +211,15 @@ class Menu extends BotService
     protected function updateProduct($product_detail)
     {
         $product_detail['bot_user_id'] = $this->chat_id;
+
+        if (is_null(Basket::query()->firstWhere($product_detail))) {
+            Basket::query()->where([
+                'bot_user_id' => $this->chat_id,
+                'is_finished' => false,
+                'is_served' => false
+            ])->delete();
+        }
+
         $this->basket = Basket::query()->updateOrCreate($product_detail, [
             'is_finished' => false
         ]);
@@ -359,15 +368,24 @@ class Menu extends BotService
         (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmNameSendConfirmationForPhone();
     }
 
-    public function confirmPhoneAndRequestAddress()
+    public function confirmPhoneAndRequestOrderType()
     {
         if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
             return;
         }
 
-        (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmPhoneAndRequestAddress();
+        (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmPhoneAndRequestOrderType();
     }
 
+
+    public function confirmOrderTypeGoNextStep()
+    {
+        if ($this->updates->isCallbackQuery() || $this->updates->message()->isFile()) {
+            return;
+        }
+
+        (new ConfirmDataForOrder($this->telegram, $this->updates))->confirmOrderTypeGoNextStep();
+    }
 
     public function getAddress()
     {
