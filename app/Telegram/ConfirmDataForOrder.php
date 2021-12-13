@@ -26,7 +26,7 @@ class ConfirmDataForOrder extends BotService
             'text' => __("Ismingizni tasdiqlang") . ": {$this->bot_user->fetchUser()->name}",
             'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton(false))
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
+
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::MENU_CONFIRM_NAME_SEND_CONFIRMATION_FOR_PHONE
@@ -60,7 +60,7 @@ class ConfirmDataForOrder extends BotService
             'text' => __('Telefon raqamini tasdiqlang') . ": {$this->bot_user->fetchUser()->phone()}",
             'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton())
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_NAME_CONFIRM_BUTTON);
+
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::MENU_CONFIRM_PHONE_AND_REQUEST_ORDER_TYPE
@@ -103,7 +103,7 @@ class ConfirmDataForOrder extends BotService
             'text' => __('Buyurtma turini tanlang'),
             'reply_markup' => $keyboard->keyboard(Keyboards::orderTypes())
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_ADDRESS_REQUEST);
+
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::MENU_CONFIRM_ORDER_TYPE_GO_NEXT_STEP
@@ -141,7 +141,7 @@ class ConfirmDataForOrder extends BotService
             'text' => __("Manzilingizni kiriting"),
             'reply_markup' => $keyboard->keyboard(Keyboards::backButton())
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_ADDRESS_REQUEST);
+
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::MENU_GET_ADDRESS
@@ -214,8 +214,6 @@ class ConfirmDataForOrder extends BotService
             'parse_mode' => 'html'
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_ORDERED_PRODUCTS_LIST);
-
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::MENU_ORDER_PRODUCTS
@@ -244,7 +242,7 @@ class ConfirmDataForOrder extends BotService
             'chat_id' => $this->chat_id,
             'text' => __('Sizning buyurtmangiz qabul qilindi, tez orada siz bilan bog\'lanamiz'),
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_ORDERED);
+
         $this->sendMainMenu();
     }
 

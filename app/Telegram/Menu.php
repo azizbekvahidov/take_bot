@@ -291,8 +291,6 @@ class Menu extends BotService
             'text' => __('Miqdorini kiriting')
         ]);
 
-        (new MessageLog($message))->createLog(MessageTypeConstants::NO_KEYBOARD, MessageCommentConstants::MENU_SEND_PRODUCT_CUSTOM_AMOUNT_REQUEST);
-
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => ActionMethodConstants::MENU_GET_PRODUCT_CUSTOM_AMOUNT,

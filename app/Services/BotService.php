@@ -4,11 +4,9 @@ namespace App\Services;
 
 use App\Constants\ActionConstants;
 use App\Constants\MainMenuButtons;
-use App\Constants\MessageCommentConstants;
 use App\Constants\MessageTypeConstants;
 use App\Models\Action;
 use App\Models\Message;
-use App\Modules\Telegram\MessageLog;
 use App\Modules\Telegram\ReplyMarkup;
 use App\Modules\Telegram\Telegram;
 use App\Modules\Telegram\Validation\Validation;
@@ -125,7 +123,6 @@ class BotService
             'text' => __("Bo'limni tanlang"),
             'reply_markup' => $keyboard->keyboard(Keyboards::sendMainMenu())
         ]);
-        (new MessageLog($message))->createLog(MessageTypeConstants::MAIN_MENU, MessageCommentConstants::MAIN_MENU);
 
         if ($message['ok']) {
             $this->action()->update([
