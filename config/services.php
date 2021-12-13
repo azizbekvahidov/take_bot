@@ -31,7 +31,7 @@ return [
     ],
 
     'telegram' => [
-        'token' => env('BOT_TOKEN', '2128158267:AAFAOWygTWpbN1kBAiJdrWV-X8RW3ozpNS0')
+        'token' => env('BOT_TOKEN', '2128158267:AAHtuu90SQ5kIfadKQOKLh1bDab2NOVta0s')
     ]
 
 ];
