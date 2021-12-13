@@ -267,13 +267,13 @@ class ConfirmDataForOrder extends BotService
                 if ($product->is_delivery) {
                     $order_type = __('Yetkazib berish');
                     $order_prepare_time = __("Buyurtmangiz 20-40 daqiqa ichida yetkazib beriladi");
+                    $product_list = "<strong>" . __("Manzil") . ":</strong> {$product->address}";
                 } else {
                     $order_type = __('Olib ketish');
                     $order_prepare_time = __("Buyurtmangiz 5-20 daqiqa ichida tayyor bo'ladi");
                 }
                 $filial = HttpRequest::getFilialDetail($product->filial_id)['data'];
-                $product_list = "<strong>" . __("Manzil") . ":</strong> {$product->address}"
-                    . PHP_EOL . "<strong>" . __("Ismingiz") . ":</strong> {$product->name}"
+                $product_list .= PHP_EOL . "<strong>" . __("Ismingiz") . ":</strong> {$product->name}"
                     . PHP_EOL . "<strong>" . __("Telefon raqam") . ":</strong> {$product->phone()}"
                     . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$filial['name']}"
                     . PHP_EOL . "<strong>" . __("Buyurtma turi") . ":</strong> {$order_type}";
