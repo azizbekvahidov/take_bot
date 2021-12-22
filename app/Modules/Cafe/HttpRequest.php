@@ -10,15 +10,13 @@ use Illuminate\Support\Facades\Http;
 class HttpRequest
 {
 
-    const BASE_URL = "http://87.237.234.154/api/v1";
-
-
     /**
      * @return array|bool|mixed
      */
     public static function getMenuList()
     {
-        $request = Http::get(self::BASE_URL . '/menu/category');
+        $base_url = config('services.telegram.cafe_client_url');
+        $request = Http::get($base_url . '/menu/category');
 
         if ($request->successful()) {
             return $request->json();
@@ -33,7 +31,8 @@ class HttpRequest
      */
     public static function getProductList(int $category_id)
     {
-        $request = Http::get(self::BASE_URL . "/menu/list?category_id={$category_id}");
+        $base_url = config('services.telegram.cafe_client_url');
+        $request = Http::get($base_url . "/menu/list?category_id={$category_id}");
 
         if ($request->successful()) {
             return $request->json();
@@ -49,7 +48,8 @@ class HttpRequest
      */
     public static function getProductDetail(int $product_id, int $type)
     {
-        $request = Http::get(self::BASE_URL . "/product", [
+        $base_url = config('services.telegram.cafe_client_url');
+        $request = Http::get($base_url . "/product", [
             'product_id' => $product_id,
             'type' => $type,
         ]);
@@ -64,7 +64,8 @@ class HttpRequest
      */
     public static function getFilialList()
     {
-        $request = Http::get(self::BASE_URL . "/filial");
+        $base_url = config('services.telegram.cafe_client_url');
+        $request = Http::get($base_url . "/filial");
 
         if ($request->successful()) {
             return $request->json();
@@ -79,7 +80,8 @@ class HttpRequest
      */
     public static function getFilialDetail(int $filial_id)
     {
-        $request = Http::get(self::BASE_URL . "/filial/{$filial_id}");
+        $base_url = config('services.telegram.cafe_client_url');
+        $request = Http::get($base_url . "/filial/{$filial_id}");
 
         if ($request->successful()) {
             return $request->json();
@@ -94,8 +96,9 @@ class HttpRequest
      */
     public static function postData(Collection $orders)
     {
+        $base_url = config('services.telegram.cafe_client_url');
 
-        $request = Http::post(self::BASE_URL . '/delivery/store', self::params($orders));
+        $request = Http::post($base_url . '/delivery/store', self::params($orders));
         if ($request->successful()) {
             return $request->json();
         }
@@ -117,6 +120,7 @@ class HttpRequest
                     'name' => $order->name,
                     'address' => $order->address,
                     'filial_id' => $order->filial_id,
+                    'order_type' => $order->type,
                     'products' => []
                 ];
             }

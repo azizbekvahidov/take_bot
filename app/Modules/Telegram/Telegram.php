@@ -94,13 +94,18 @@ class Telegram
      */
     private function sendErrorMessage(array $params, array $request)
     {
-        $this->send('sendMessage', [
-            'chat_id' => 287956415,
-            'text' => json_encode([
-                'params' => $params,
-                'error' => $request
-            ])
-        ]);
+        try {
+            $this->send('sendMessage', [
+                'chat_id' => 287956415,
+                'text' => json_encode([
+                    'params' => $params,
+                    'error' => $request
+                ])
+            ]);
+        } catch (\Exception $exception) {
+            info($exception);
+        }
+
     }
 
     public function getToken()

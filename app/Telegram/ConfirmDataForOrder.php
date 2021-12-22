@@ -7,6 +7,7 @@ namespace App\Telegram;
 use App\Constants\ActionMethodConstants;
 use App\Constants\MessageCommentConstants;
 use App\Constants\MessageTypeConstants;
+use App\Constants\OrderTypeConstants;
 use App\Models\Basket;
 use App\Modules\Cafe\HttpRequest;
 use App\Modules\Telegram\MessageLog;
@@ -121,18 +122,32 @@ class ConfirmDataForOrder extends BotService
         $params = [
             'is_delivery' => false
         ];
-        if ($this->text === __('Olib ketish')) {
-            $params['address'] = null;
-            $this->sendFilialList();
-        } elseif ($this->text === __('Yetkazib berish')) {
-            $params['is_delivery'] = true;
-            $this->sendAddressRequest();
+        switch ($this->text) {
+            case __('Olib ketish'):
+                $params['type'] = OrderTypeConstants::TAKE;
+                $params['address'] = null;
+                $this->sendFilialList();
+                break;
+            case __('Yetkazib berish'):
+                $params['is_delivery'] = true;
+                $params['type'] = OrderTypeConstants::DELIVERY;
+                $this->sendAddressRequest();
+                break;
+            case __('Joyida'):
+                $params['type'] = OrderTypeConstants::BOOKING;
+                $params['address'] = null;
+                $this->sendFilialList();
+                break;
+            default:
+                return;
         }
+
         $this->updateUnServedProducts($params);
 
     }
 
-    protected function sendAddressRequest()
+    protected
+    function sendAddressRequest()
     {
         $this->deleteMessages(MessageTypeConstants::INLINE_KEYBOARD);
         $keyboard = new ReplyMarkup(true, true);
@@ -149,7 +164,8 @@ class ConfirmDataForOrder extends BotService
         }
     }
 
-    public function getAddress()
+    public
+    function getAddress()
     {
         if ($this->text === __('Ortga qaytish')) {
             $this->sendOrderTypeRequest();
@@ -168,7 +184,8 @@ class ConfirmDataForOrder extends BotService
         $this->sendFilialList();
     }
 
-    protected function sendFilialList()
+    protected
+    function sendFilialList()
     {
         $keyboard = new ReplyMarkup();
 
@@ -186,7 +203,8 @@ class ConfirmDataForOrder extends BotService
         }
     }
 
-    public function getFilial()
+    public
+    function getFilial()
     {
         $callback_data = $this->updates->callbackQuery()->getData();
         if ($callback_data === "filial_back") {
@@ -250,7 +268,8 @@ class ConfirmDataForOrder extends BotService
     /**
      * @return string
      */
-    private function getOrderedProductsList(): string
+    private
+    function getOrderedProductsList(): string
     {
         $lang = app()->getLocale();
         $product_list = "";
@@ -264,14 +283,22 @@ class ConfirmDataForOrder extends BotService
             $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type)['data'];
             $product_name = $product_detail["name_{$lang}"] ?: $product_detail["name_uz"];
             if ($key === 0) {
-                if ($product->is_delivery) {
-                    $order_type = __('Yetkazib berish');
-                    $order_prepare_time = __("Buyurtmangiz 20-40 daqiqa ichida yetkazib beriladi");
-                    $product_list = "<strong>" . __("Manzil") . ":</strong> {$product->address}";
-                } else {
-                    $order_type = __('Olib ketish');
-                    $order_prepare_time = __("Buyurtmangiz 5-20 daqiqa ichida tayyor bo'ladi");
+                switch ($product->type) {
+                    case OrderTypeConstants::TAKE:
+                        $order_type = __('Olib ketish');
+                        $order_prepare_time = __("Buyurtmangiz 5-20 daqiqa ichida tayyor bo'ladi");
+                        break;
+                    case OrderTypeConstants::BOOKING:
+                        $order_type = __("Joy band qilish");
+                        $order_prepare_time = "";
+                        break;
+                    case OrderTypeConstants::DELIVERY:
+                        $order_type = __('Yetkazib berish');
+                        $order_prepare_time = __("Buyurtmangiz 20-40 daqiqa ichida yetkazib beriladi");
+                        $product_list = "<strong>" . __("Manzil") . ":</strong> {$product->address}";
+                        break;
                 }
+
                 $filial = HttpRequest::getFilialDetail($product->filial_id)['data'];
                 $product_list .= PHP_EOL . "<strong>" . __("Ismingiz") . ":</strong> {$product->name}"
                     . PHP_EOL . "<strong>" . __("Telefon raqam") . ":</strong> {$product->phone()}"
@@ -291,7 +318,8 @@ class ConfirmDataForOrder extends BotService
         return $product_list;
     }
 
-    private function updateUnServedProducts(array $params)
+    private
+    function updateUnServedProducts(array $params)
     {
         Basket::query()->where('is_finished', '=', true)
             ->where('is_served', '=', false)
@@ -302,7 +330,8 @@ class ConfirmDataForOrder extends BotService
     /**
      * @return Builder|Model|object|null
      */
-    private function getBasket()
+    private
+    function getBasket()
     {
         return Basket::query()->where('is_finished', '=', true)
             ->where('is_served', '=', false)

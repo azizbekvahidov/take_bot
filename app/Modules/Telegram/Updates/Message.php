@@ -112,4 +112,9 @@ class Message
         }
         return false;
     }
+
+    public function file(array $file = [])
+    {
+        return new File(empty($file) ? $this->message : $file);
+    }
 }

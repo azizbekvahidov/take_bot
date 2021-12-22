@@ -5,6 +5,7 @@ namespace App\Telegram;
 
 
 use App\Constants\ActionMethodConstants;
+use App\Constants\CacheVariableConstants;
 use App\Constants\MessageCommentConstants;
 use App\Constants\MessageTypeConstants;
 use App\Models\Basket;
@@ -13,12 +14,14 @@ use App\Modules\Cafe\HttpRequest;
 use App\Modules\Telegram\MessageLog;
 use App\Modules\Telegram\ReplyMarkup;
 use App\Modules\Telegram\Telegram;
+use App\Modules\Telegram\Updates\File;
 use App\Modules\Telegram\WebhookUpdates;
 use App\Services\BotService;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class Menu extends BotService
@@ -105,21 +108,37 @@ class Menu extends BotService
             return;
         }
         $messages_list = [];
+
+        if (!Cache::has(CacheVariableConstants::PRODUCT_PHOTOS)) {
+            Cache::forever(CacheVariableConstants::PRODUCT_PHOTOS, []);
+        }
+        $photos = Cache::get(CacheVariableConstants::PRODUCT_PHOTOS);
         foreach ($list as $product) {
+            $product_path = $product['product']['image'] ?: 'products/default-image.jpg';
+            $photo = $photos[$product_path] ?? '';
             $product_name = $product['product']["name_{$this->language}"] ?: $product['product']["name_uz"];
-            $message = $this->telegram->send('sendPhoto', [
+
+            $body = [
                 'chat_id' => $this->chat_id,
-                'caption' => "<strong>" . $product_name . "</strong>"
-                    . PHP_EOL . PHP_EOL . "<strong>" . __('Narxi') . ": </strong>" . $product['product']['price'] . " " . __("so'm"),
+                'caption' => $this->getCaption($product, $product_name),
                 'reply_markup' => $keyboard->inline()->keyboard(Keyboards::product($product)),
                 'parse_mode' => "html",
-            ], [
-                'type' => 'photo',
-                'content' => $this->getImage($product['product']['image']),
-                'name' => $product_name
-            ]);
+            ];
+            if ($photo) {
+                $file = [];
+                $body['photo'] = $photo;
+            } else {
+                $file = [
+                    'type' => 'photo',
+                    'content' => $this->getImage($product['product']['image']),
+                    'name' => $product_name
+                ];
+            }
+            $message = $this->telegram->send('sendPhoto', $body, $file);
+            $photos[$product_path] = (new File($message['result']))->fileId();
             array_push($messages_list, $message);
         }
+        Cache::forever(CacheVariableConstants::PRODUCT_PHOTOS, $photos);
         (new MessageLog($messages_list))->createLog(MessageTypeConstants::INLINE_KEYBOARD, MessageCommentConstants::MAIN_SEND_PRODUCT_LIST);
 
         $this->deleteMessage($callback_query->message()->getMessageId());
@@ -461,5 +480,11 @@ class Menu extends BotService
             ->where('is_served', '=', false)
             ->where('bot_user_id', '=', $this->chat_id)
             ->update($params);
+    }
+
+    private function getCaption(array $product, string $product_name)
+    {
+        return "<strong>" . $product_name . "</strong>"
+            . PHP_EOL . PHP_EOL . "<strong>" . __('Narxi') . ": </strong>" . $product['product']['price'] . " " . __("so'm");
     }
 }

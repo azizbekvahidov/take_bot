@@ -166,7 +166,7 @@ class BotService
         if (empty($messages->toArray())) {
             return;
         }
-        $this->sendDeleteRequest($messages, false);
+        $this->sendDeleteRequest($messages);
     }
 
     /**
@@ -192,7 +192,7 @@ class BotService
         $message = $messages->first();
         $method = "deleteMessage";
         if ($message) {
-            if (time() - $message->created_at->timestamp > 60 * 60 * 24 * 2) {
+            if (time() - $message->created_at->timestamp >= 60 * 60 * 24 * 2) {
                 $method = "editMessageReplyMarkup";
             }
         }

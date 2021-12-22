@@ -339,6 +339,9 @@ class Keyboards
                 [
                     'text' => __('Yetkazib berish')
                 ],
+                [
+                    'text' => __('Joyida')
+                ]
             ],
             [
                 [
