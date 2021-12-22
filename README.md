@@ -8,7 +8,8 @@
 
 - php artisan key:generate
 
-- add BOT_TOKEN to .env
+- add BOT_TOKEN to .env 
+- add CAFE_CLIENT_URL to .env
 - configure database configurations in .env
 - php artisan migrate
 - Url for webhook: https://api.telegram.org/bot{token}/setWebhook?url={url}/api/telegram-bot-connect
