@@ -36,6 +36,6 @@ class Chat
      */
     public function username(): ?string
     {
-        return $this->chat['username'];
+        return $this->chat['username'] ?? null;
     }
 }
