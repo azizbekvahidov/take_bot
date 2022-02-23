@@ -98,7 +98,9 @@ class HttpRequest
     {
         $base_url = config('services.telegram.cafe_client_url');
 
-        $request = Http::post($base_url . '/delivery/store', self::params($orders));
+        $request = Http::withHeaders([
+            'Accept' => 'application/json'
+        ])->post($base_url . '/delivery/store', self::params($orders));
         if ($request->successful()) {
             return $request->json();
         }
@@ -124,11 +126,11 @@ class HttpRequest
                     'products' => []
                 ];
             }
-            array_push($prepared_data['products'], [
+            $prepared_data['products'][] = [
                 'product_id' => $order->product_id,
                 'type' => $order->product_type,
                 'amount' => (double)$order->amount
-            ]);
+            ];
         }
         return $prepared_data;
     }
