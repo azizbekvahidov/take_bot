@@ -2,16 +2,23 @@
 
 namespace App\Constants;
 
+use App\Telegram\Basket;
 use App\Telegram\Menu;
 
 class ActionConstant
 {
     const MENU = Menu::class;
 
-    public static function mainActionsList()
+    const BASKET = Basket::class;
+
+    /**
+     * @return string[]
+     */
+    public static function mainActionsList(): array
     {
         return [
-            self::MENU
+            self::MENU,
+            self::BASKET,
         ];
     }
 
@@ -24,7 +31,7 @@ class ActionConstant
         return [
                 __(MainMenuButtons::MENU) => self::MENU,
 //                __(MainMenuButtons::ALTER_LANGUAGE) => self::ALTER_LANGUAGE,
-//                __(MainMenuButtons::BASKET) => self::BASKET
+                __(MainMenuButtons::BASKET) => self::BASKET
             ][$button] ?? null;
     }
 }

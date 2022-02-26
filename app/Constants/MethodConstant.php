@@ -36,4 +36,10 @@ class MethodConstant
     const MENU_GET_FILIAL = 'getFilial';
 
     const MENU_ORDER_PRODUCTS = 'orderProducts';
+
+    const SEND_PRODUCTS_LIST = 'sendProductsList';
+
+    const GET_PRODUCT = 'getProduct';
+
+    const PRODUCT_MANIPULATION = 'productManipulation';
 }

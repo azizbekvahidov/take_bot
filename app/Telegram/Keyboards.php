@@ -333,4 +333,51 @@ class Keyboards
             ]
         ];
     }
+
+    /**
+     * @param array $product_ids
+     * @return array
+     */
+    public static function getOrderedProductsList(array $product_ids): array
+    {
+        $return_data = [
+            [
+                [
+                    'text' => __('Buyurtma berish') . " ✅",
+                    'callback_data' => implode('|', [
+                        'class' => Basket::class,
+                        'method' => MethodConstant::PRODUCT_MANIPULATION,
+                        'data' => 'order'
+                    ])
+                ]
+            ]
+        ];
+        $temp_array = [];
+        $last_index = count($product_ids) - 1;
+        foreach ($product_ids as $key => $id) {
+            $temp_array[] = [
+                'text' => ($key + 1) . " ❌",
+                'callback_data' => implode('|', [
+                    'class' => Basket::class,
+                    'method' => MethodConstant::PRODUCT_MANIPULATION,
+                    'data' => $id
+                ])
+            ];
+            if (count($temp_array) === 4 || $key == $last_index) {
+                $return_data[] = $temp_array;
+                $temp_array = [];
+            }
+        }
+        $return_data[] = [
+            [
+                'text' => __("Ortga"),
+                'callback_data' => implode('|', [
+                    'class' => Basket::class,
+                    'method' => MethodConstant::PRODUCT_MANIPULATION,
+                    'data' => 'Ortga'
+                ])
+            ]
+        ];
+        return $return_data;
+    }
 }

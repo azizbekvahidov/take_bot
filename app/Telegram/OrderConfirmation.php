@@ -8,7 +8,6 @@ use App\Exceptions\ApiServerException;
 use App\Exceptions\MenuListEmptyException;
 use App\Models\Basket;
 use App\Modules\Cafe\HttpRequest;
-use App\Modules\Telegram\MessageLog;
 use App\Modules\Telegram\ReplyMarkup;
 use App\Services\BotService;
 use Illuminate\Support\Arr;
@@ -209,7 +208,6 @@ class OrderConfirmation extends BotService
             'reply_markup' => $keyboard->keyboard(Keyboards::getFilialList($list)),
             'parse_mode' => 'html'
         ]);
-        (new MessageLog($message))->createLog();
         if ($message['ok']) {
             $this->action()->update([
                 'sub_action' => MethodConstant::MENU_GET_FILIAL
