@@ -75,7 +75,7 @@ class Keyboards
     public static function menusList(array $list): array
     {
         if (empty($list)) {
-            throw new ApiServerException(__('Menyuni ro\'yhati kelmadi, Serverda hatolik ro\'y berdi'));
+            throw new ApiServerException('Menyuni ro\'yhati kelmadi, Serverda hatolik ro\'y berdi');
         } elseif (empty($list['data'])) {
             throw new MenuListEmptyException(__('Menyu bo\'sh'));
         }

@@ -86,7 +86,7 @@ class Basket extends Message
             }
             $message_text .= PHP_EOL . PHP_EOL . ($key + 1) . ")  <strong>{$product_name}</strong>"
                 . PHP_EOL . "     <strong>" . __("Miqdori") . ":</strong> {$product->amount}"
-                . PHP_EOL . "     <strong>" . __("Narxi") . ":</strong> " . ($product->amount * $product_detail['price']) . " " . __("so'm");;
+                . PHP_EOL . "     <strong>" . __("Narxi") . ":</strong> " . ($product->amount * $product_detail['price']) . " " . __("so'm");
         }
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,

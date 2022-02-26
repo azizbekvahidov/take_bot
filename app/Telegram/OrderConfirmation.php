@@ -241,7 +241,6 @@ class OrderConfirmation extends BotService
             throw new MenuListEmptyException(__('Filiallar bo\'sh'));
         }
 
-        $lang = app()->getLocale();
         $plucked = Arr::pluck($list['data'], "name", 'id');
         if (!in_array($this->text, $plucked)) {
             $keyboard = new ReplyMarkup(true, true);
@@ -297,7 +296,7 @@ class OrderConfirmation extends BotService
                         $order_prepare_time = __("Buyurtmangiz 5-20 daqiqa ichida tayyor bo'ladi");
                         break;
                     case OrderTypeConstant::BOOKING:
-                        $order_type = __("Joy band qilish");
+                        $order_type = __("Joyida");
                         $order_prepare_time = "";
                         break;
                     case OrderTypeConstant::DELIVERY:
@@ -317,10 +316,10 @@ class OrderConfirmation extends BotService
             $total_price += $price;
             $product_list .= PHP_EOL . PHP_EOL . "<strong>{$product_name}</strong>"
                 . PHP_EOL . "<strong>" . __("Miqdori") . ":</strong> {$product->amount}"
-                . PHP_EOL . "<strong>" . __("Narxi") . ":</strong> {$price}";
+                . PHP_EOL . "<strong>" . __("Narxi") . ":</strong> {$price} " . __("so'm");
         }
 
-        $product_list .= PHP_EOL . PHP_EOL . "<strong>" . __("Umumiy narxi") . ":</strong> {$total_price}"
+        $product_list .= PHP_EOL . PHP_EOL . "<strong>" . __("Umumiy narxi") . ":</strong> {$total_price} " . __("so'm")
             . PHP_EOL . PHP_EOL . "<strong>{$order_prepare_time}</strong>";
 
         return $product_list;
