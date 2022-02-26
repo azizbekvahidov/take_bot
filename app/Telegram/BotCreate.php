@@ -29,9 +29,6 @@ class BotCreate extends Message
         }
     }
 
-    /**
-     * @return void
-     */
     public function index()
     {
         $method = $this->action()->sub_action;
