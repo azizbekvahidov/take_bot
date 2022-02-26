@@ -61,6 +61,7 @@ class Basket extends Message
                 'chat_id' => $this->chat_id,
                 'text' => __("Savatingiz bo'sh"),
             ]);
+            $this->sendMainMenu();
             return;
         }
         foreach ($basket as $key => $product) {
