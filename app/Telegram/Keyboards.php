@@ -380,4 +380,44 @@ class Keyboards
         ];
         return $return_data;
     }
+
+    /**
+     * @param string $lang
+     * @return \array[][]
+     */
+    public static function inlineLanguagesList(string $lang = 'uz'): array
+    {
+        return [
+            [
+                [
+                    'text' => trans_choice("uz", $lang === 'uz' ? 1 : 0),
+                    'callback_data' => implode('|', [
+                        'class' => Language::class,
+                        'method' => MethodConstant::GET_LANGUAGE,
+                        'data' => 'uz'
+                    ]),
+                ],
+            ],
+            [
+                [
+                    'text' => trans_choice("ru", $lang === 'ru' ? 1 : 0),
+                    'callback_data' => implode('|', [
+                        'class' => Language::class,
+                        'method' => MethodConstant::GET_LANGUAGE,
+                        'data' => 'ru'
+                    ]),
+                ],
+            ],
+            [
+                [
+                    'text' => trans_choice("en", $lang === 'en' ? 1 : 0),
+                    'callback_data' => implode('|', [
+                        'class' => Language::class,
+                        'method' => MethodConstant::GET_LANGUAGE,
+                        'data' => 'en'
+                    ]),
+                ],
+            ]
+        ];
+    }
 }

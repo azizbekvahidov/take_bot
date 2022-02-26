@@ -42,4 +42,6 @@ class MethodConstant
     const GET_PRODUCT = 'getProduct';
 
     const PRODUCT_MANIPULATION = 'productManipulation';
+
+    const GET_LANGUAGE = 'getLanguage';
 }

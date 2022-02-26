@@ -54,6 +54,7 @@ class BotService implements SetActions
 
     public function init()
     {
+        app()->setLocale($this->fetchUser()->language ?: 'uz');
         if (CheckUpdateType::isChatMember($this->json)) {
             //
         } elseif (CheckUpdateType::isMessage($this->json)) {
