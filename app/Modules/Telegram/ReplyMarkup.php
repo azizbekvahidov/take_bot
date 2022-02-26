@@ -34,10 +34,8 @@ class ReplyMarkup
                                 bool $resize_keyboard = false,
                                 bool $is_inline = false)
     {
-        $this->keyboard = [
-            'one_time_keyboard' => $one_time_keyboard,
-            'resize_keyboard' => $resize_keyboard
-        ];
+        $this->one_time_keyboard = $one_time_keyboard;
+        $this->resize_keyboard = $resize_keyboard;
         $this->is_inline = $is_inline;
     }
 
@@ -62,6 +60,24 @@ class ReplyMarkup
     }
 
     /**
+     * @return $this
+     */
+    public function oneTimeKeyboard(): ReplyMarkup
+    {
+        $this->one_time_keyboard = true;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function resizeKeyboard(): ReplyMarkup
+    {
+        $this->resize_keyboard = true;
+        return $this;
+    }
+
+    /**
      * @param array $keyboard
      * @return array|bool[]
      */
@@ -78,5 +94,7 @@ class ReplyMarkup
     private function setKeyboardType(array $keyboard)
     {
         $this->keyboard[$this->is_inline ? 'inline_keyboard' : 'keyboard'] = $keyboard;
+        $this->keyboard['one_time_keyboard'] = $this->one_time_keyboard;
+        $this->keyboard['resize_keyboard'] = $this->resize_keyboard;
     }
 }
