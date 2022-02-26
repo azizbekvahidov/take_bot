@@ -253,7 +253,7 @@ class Keyboards
         }
 
         $lang = app()->getLocale();
-        $last_position = count($list) - 1;
+        $last_position = count($list['data']) - 1;
         $return_array = [];
         $temp_array = [];
         foreach ($list['data'] as $key => $item) {

@@ -200,8 +200,8 @@ class OrderConfirmation extends BotService
     {
         $keyboard = new ReplyMarkup(true, true);
 
-//        $list = HttpRequest::getFilialList()['data'];
-        $list = json_decode(file_get_contents(storage_path('list/filial.json')), true);
+        $list = HttpRequest::getFilialList();
+//        $list = json_decode(file_get_contents(storage_path('list/filial.json')), true);
 
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
@@ -233,8 +233,8 @@ class OrderConfirmation extends BotService
             return;
         }
 
-//        $list = HttpRequest::getFilialList();
-        $list = json_decode(file_get_contents(storage_path('list/filial.json')), true);
+        $list = HttpRequest::getFilialList();
+//        $list = json_decode(file_get_contents(storage_path('list/filial.json')), true);
 
 
         if (empty($list)) {
@@ -244,7 +244,7 @@ class OrderConfirmation extends BotService
         }
 
         $lang = app()->getLocale();
-        $plucked = Arr::pluck($list['data'], "name_{$lang}", 'id');
+        $plucked = Arr::pluck($list['data'], "name", 'id');
         if (!in_array($this->text, $plucked)) {
             $keyboard = new ReplyMarkup(true, true);
             return $this->telegram->send('sendMessage', [
