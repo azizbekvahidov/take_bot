@@ -66,12 +66,14 @@ class Telegram
 
     public function send(string $method, array $params, array $file = [])
     {
+        $http = app(Http::class);
         $base_url = $this->setMethod($method);
         if (!empty($file)) {
-            $request = Http::attach($file['type'], $file['content'], $file['name'])->post($base_url, array_filter($params));
-        } else {
-            $request = Http::post($base_url, array_filter($params));
+            $http = $http::attach($file['type'], $file['content'], $file['name']);
         }
+        $request = empty($file)
+            ? $http::post($base_url, array_filter($params))
+            : $http->post($base_url, array_filter($params));
 
         if (!$request->successful()) {
             $this->sendErrorMessage($params, $request->json());

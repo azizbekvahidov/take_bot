@@ -34,5 +34,7 @@ class Message extends BotService
         if (Str::lower($this->text) === '/start') {
             return $this->sendMainMenu();
         }
+
+        $this->setActions();
     }
 }

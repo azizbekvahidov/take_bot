@@ -22,7 +22,7 @@ class HttpRequest
             return $request->json();
         }
 
-        return !$request->successful();
+        return [];
     }
 
     /**
@@ -38,7 +38,7 @@ class HttpRequest
             return $request->json();
         }
 
-        return !$request->successful();
+        return [];
     }
 
     /**
@@ -56,7 +56,7 @@ class HttpRequest
         if ($request->successful()) {
             return $request->json();
         }
-        return !$request->successful();
+        return [];
     }
 
     /**
@@ -71,7 +71,7 @@ class HttpRequest
             return $request->json();
         }
 
-        return !$request->successful();
+        return [];
     }
 
     /**
@@ -87,7 +87,7 @@ class HttpRequest
             return $request->json();
         }
 
-        return !$request->successful();
+        return [];
     }
 
     /**
@@ -105,7 +105,7 @@ class HttpRequest
             return $request->json();
         }
 
-        return !$request->successful();
+        return [];
     }
 
     /**

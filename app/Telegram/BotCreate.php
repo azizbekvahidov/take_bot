@@ -9,6 +9,7 @@ use App\Modules\Telegram\Telegram;
 use App\Modules\Telegram\WebhookUpdates;
 use App\Telegram\Updates\Message;
 use Exception;
+use Illuminate\Support\Str;
 
 
 class BotCreate extends Message
@@ -104,7 +105,7 @@ class BotCreate extends Message
                 'text' => __('Ismingizni kiriting')
             ]);
         }
-        if (mb_strlen($this->text) > 200) {
+        if (Str::length($this->text) > 200) {
             return $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,
                 'text' => __('Ismingizni to\'g\'ri kiriting (200 dan ko\'p harf kiritish mumkin emas)')
@@ -135,7 +136,6 @@ class BotCreate extends Message
      */
     public function getPhoneFinishRegistration()
     {
-        dump(preg_match('/^\+998\d{9}$/', $this->text));
         if (
             $this->updates->message()->isFile()
             || (

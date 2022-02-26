@@ -1,0 +1,22 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "name_uz": "Name 1",
+            "name_ru": "Name 1",
+            "name_en": "Name 1"
+        },
+        {
+            "id": 2,
+            "name_uz": "Name 2",
+            "name_ru": "Name 2",
+            "name_en": "Name 2"
+        },
+        {
+            "id": 3,
+            "name_uz": "Name 3",
+            "name_ru": "Name 3",
+            "name_en": "Name 3"
+        }
+    ]
+}
