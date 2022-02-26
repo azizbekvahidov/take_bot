@@ -10,8 +10,13 @@ use App\Modules\Telegram\WebhookUpdates;
 use App\Telegram\Updates\Message;
 use Exception;
 
+
 class BotCreate extends Message
 {
+    /**
+     * @param Telegram $telegram
+     * @param WebhookUpdates $updates
+     */
     public function __construct(Telegram $telegram, WebhookUpdates $updates)
     {
         parent::__construct($telegram, $updates);
@@ -24,6 +29,9 @@ class BotCreate extends Message
         }
     }
 
+    /**
+     * @return void
+     */
     public function index()
     {
         $method = $this->action()->sub_action;
@@ -36,6 +44,10 @@ class BotCreate extends Message
         }
     }
 
+    /**
+     * Метод отправляет список языков
+     * @return void
+     */
     public function sendLanguagesList()
     {
         $keyboard = new ReplyMarkup();
@@ -52,6 +64,10 @@ class BotCreate extends Message
         ]);
     }
 
+    /**
+     * Метод получает язык и отправляет запрос на имя
+     * @return array|mixed|void
+     */
     public function getLanguageSendNameRequest()
     {
         if (!in_array($this->text, LanguageConstant::list())) {
@@ -79,6 +95,10 @@ class BotCreate extends Message
         ]);
     }
 
+    /**
+     * Метод получает имя и отправляет запрос на номер телефона
+     * @return array|mixed|void
+     */
     public function getNameSendPhoneRequest()
     {
         if ($this->updates->message()->isFile()) {
@@ -112,6 +132,10 @@ class BotCreate extends Message
         ]);
     }
 
+    /**
+     * Метод получает имя и закончит регистрацию
+     * @return array|mixed|void
+     */
     public function getPhoneFinishRegistration()
     {
         dump(preg_match('/^\+998\d{9}$/', $this->text));
