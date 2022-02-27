@@ -77,7 +77,7 @@ class OrderConfirmation extends BotService
         if ($this->text === __('Tasdiqlayman')) {
             $phone = $this->fetchUser()->phone;
         } else {
-            if (!preg_match('/^998\d{9}$/', $this->text)) {
+            if (!preg_match('/^998\d{9}$/', $phone)) {
                 return $this->telegram->send('sendMessage', [
                     'chat_id' => $this->chat_id,
                     'text' => __('Telefon raqamingizni +998YYXXXXXXX formatida kiriting'),

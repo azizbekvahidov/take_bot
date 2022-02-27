@@ -32,6 +32,10 @@ class Message extends BotService
         }
 
         if (Str::lower($this->text) === '/start') {
+            $this->telegram->send('sendMessage', [
+                'chat_id' => $this->chat_id,
+                'text' => __('Assalomu alaykum')
+            ]);
             return $this->sendMainMenu();
         }
 

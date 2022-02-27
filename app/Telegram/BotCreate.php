@@ -79,9 +79,12 @@ class BotCreate extends Message
             ]);
         }
 
+
         $this->fetchUser()->update([
-            'language' => LanguageConstant::getKey()[$this->text],
+            'language' => $language = LanguageConstant::getKey()[$this->text],
         ]);
+
+        app()->setLocale($language);
 
         $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
