@@ -390,7 +390,7 @@ class Keyboards
         return [
             [
                 [
-                    'text' => trans_choice("uz", $lang === 'uz' ? 1 : 0),
+                    'text' => __('uz') . ($lang === 'uz' ? ' ✅' : ''),
                     'callback_data' => implode('|', [
                         'class' => Language::class,
                         'method' => MethodConstant::GET_LANGUAGE,
@@ -400,7 +400,7 @@ class Keyboards
             ],
             [
                 [
-                    'text' => trans_choice("ru", $lang === 'ru' ? 1 : 0),
+                    'text' => __('ru') . ($lang === 'ru' ? ' ✅' : ''),
                     'callback_data' => implode('|', [
                         'class' => Language::class,
                         'method' => MethodConstant::GET_LANGUAGE,
@@ -410,7 +410,7 @@ class Keyboards
             ],
             [
                 [
-                    'text' => trans_choice("en", $lang === 'en' ? 1 : 0),
+                    'text' => __('en') . ($lang === 'en' ? ' ✅' : ''),
                     'callback_data' => implode('|', [
                         'class' => Language::class,
                         'method' => MethodConstant::GET_LANGUAGE,
