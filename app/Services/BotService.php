@@ -70,7 +70,10 @@ class BotService implements SetActions
         }
 
         if (CheckUpdateType::isChatMember($this->json)) {
-            //
+            $status = $this->updates->myChatMember()->newChatMember()->status();
+            $this->fetchUser()->update([
+                'status' => $status
+            ]);
         } elseif (CheckUpdateType::isMessage($this->json)) {
             (new Message($this->telegram, $this->updates))->index();
         } elseif (CheckUpdateType::isCallbackQuery($this->json)) {
