@@ -38,4 +38,12 @@ class Chat
     {
         return $this->chat['username'] ?? null;
     }
+
+    /**
+     * @return string
+     */
+    public function type(): string
+    {
+        return $this->chat['type'];
+    }
 }

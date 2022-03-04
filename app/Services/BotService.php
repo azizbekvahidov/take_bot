@@ -55,11 +55,7 @@ class BotService
     {
         $this->telegram = $telegram;
         $this->updates = $updates;
-        $this->chat_id = $updates->chat();
-        $this->text = $updates->text();
-        $this->bot_user = new \App\Modules\Telegram\BotUser($this->chat_id);
-        $this->validation = new Validation($this->text);
-        $this->language = $this->setLocale();
+
     }
 
     /**
@@ -68,6 +64,13 @@ class BotService
      */
     public function init()
     {
+
+        if ($this->updates->isChannel() || $this->updates->isGroup()) {
+            return;
+        }
+
+        $this->initVariables();
+
         if ($this->updates->isChatMember()) {
             if (!in_array($this->updates->myChatMember()->newChatMember()->status(), [
                 'creator',
@@ -100,6 +103,18 @@ class BotService
             (new MainMenu($this->telegram, $this->updates))->index();
         }
 
+    }
+
+    /**
+     * @return void
+     */
+    private function initVariables()
+    {
+        $this->chat_id = $this->updates->chat();
+        $this->text = $this->updates->text();
+        $this->bot_user = new \App\Modules\Telegram\BotUser($this->chat_id);
+        $this->validation = new Validation($this->text);
+        $this->language = $this->setLocale();
     }
 
     /**
