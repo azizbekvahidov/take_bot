@@ -22,6 +22,7 @@ trait SetActions
 
         $action = $this->action()->action;
         if (is_null($action) || !class_exists($action)) {
+            $this->deleteMessages();
             return $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,
                 'text' => __('Что-то пошло не так, пожалуйста нажмите на /start')

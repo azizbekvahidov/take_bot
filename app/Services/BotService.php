@@ -9,9 +9,11 @@ use App\Modules\Telegram\CheckUpdateType;
 use App\Modules\Telegram\ReplyMarkup;
 use App\Modules\Telegram\Telegram;
 use App\Modules\Telegram\WebhookUpdates;
+use App\Telegram\BotCreate;
 use App\Telegram\Keyboards;
 use App\Telegram\Updates\Message;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 /**
  * Class BotService
@@ -55,13 +57,44 @@ class BotService implements SetActions
     public function init()
     {
         app()->setLocale($this->fetchUser()->language ?: 'uz');
+
+        if (!$this->botUser()->isRegistrationFinished()) {
+            $this->deleteMessages();
+            if (Str::lower($this->text) === '/start') {
+                $this->action()->update([
+                    'action' => null,
+                    'sub_action' => null
+                ]);
+            }
+            return (new BotCreate($this->telegram, $this->updates))->index();
+        }
+
         if (CheckUpdateType::isChatMember($this->json)) {
             //
         } elseif (CheckUpdateType::isMessage($this->json)) {
             (new Message($this->telegram, $this->updates))->index();
         } elseif (CheckUpdateType::isCallbackQuery($this->json)) {
             $data = $this->updates->callbackQuery()->getData();
-            list($class, $method, $data) = explode('|', $data);
+            $callback_data_array = explode('|', $data);
+
+            if (count($callback_data_array) !== 3) {
+                $this->deleteMessages();
+                return $this->telegram->send('sendMessage', [
+                    'chat_id' => $this->chat_id,
+                    'text' => __('Что-то пошло не так, пожалуйста нажмите на /start')
+                ]);
+            }
+
+            list($class, $method, $data) = $callback_data_array;
+
+            if (!class_exists($class) || !method_exists($class, $method)) {
+                $this->deleteMessages();
+                return $this->telegram->send('sendMessage', [
+                    'chat_id' => $this->chat_id,
+                    'text' => __('Что-то пошло не так, пожалуйста нажмите на /start')
+                ]);
+            }
+
             (new $class($this->telegram, $this->updates))->$method($data);
         }
     }
@@ -131,12 +164,14 @@ class BotService implements SetActions
             $method = now()->diffInDays($message->created_at) >= 2
                 ? 'editMessageReplyMarkup'
                 : 'deleteMessage';
+            $message_id = $message->message_id;
+
+            $message->delete();
 
             $this->telegram->send($method, [
                 'chat_id' => $this->chat_id,
-                'message_id' => $message->message_id
+                'message_id' => $message_id
             ]);
-            $message->delete();
         }
     }
 }

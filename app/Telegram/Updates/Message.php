@@ -20,17 +20,6 @@ class Message extends BotService
      */
     public function index()
     {
-        if (!$this->botUser()->isRegistrationFinished()) {
-            if (Str::lower($this->text) === '/start') {
-                $this->action()->update([
-                    'action' => null,
-                    'sub_action' => null
-                ]);
-            }
-            return (new BotCreate($this->telegram, $this->updates))->index();
-
-        }
-
         if (Str::lower($this->text) === '/start') {
             $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,

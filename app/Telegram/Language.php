@@ -38,6 +38,7 @@ class Language extends Message
 
     public function sendLanguagesList()
     {
+        $this->deleteMessages();
         $keyboard = new ReplyMarkup();
         $lang = app()->getLocale();
         $message = $this->telegram->send('sendMessage', [

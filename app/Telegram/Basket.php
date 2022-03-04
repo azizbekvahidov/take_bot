@@ -51,6 +51,7 @@ class Basket extends Message
     {
         $lang = app()->getLocale();
 
+        $this->deleteMessages();
         $keyboard = new ReplyMarkup();
         $message_text = "";
         $product_ids = [];
@@ -95,12 +96,6 @@ class Basket extends Message
             'reply_markup' => $keyboard->inline()->keyboard(Keyboards::getOrderedProductsList($product_ids))
         ]);
         (new MessageLog($message))->createLog();
-
-        if ($message['ok']) {
-            $this->action()->update([
-                'sub_action' => MethodConstant::GET_PRODUCT
-            ]);
-        }
     }
 
     /**
