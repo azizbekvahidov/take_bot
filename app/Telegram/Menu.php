@@ -50,8 +50,8 @@ class Menu extends Message
         if (!$is_edit) {
             $this->deleteMessages();
         }
-//        $list = HttpRequest::getMenuList();
-        $list = json_decode(file_get_contents(storage_path('list/category.json')), true);
+        $list = HttpRequest::getMenuList();
+//        $list = json_decode(file_get_contents(storage_path('list/category.json')), true);
         $keyboard = new ReplyMarkup();
         $message = $this->telegram->send($is_edit ? 'editMessageText' : 'sendMessage', [
             'chat_id' => $this->chat_id,
@@ -78,8 +78,8 @@ class Menu extends Message
         $this->getBasket()->update([
             'category_id' => $category_id
         ]);
-//        $list = HttpRequest::getProductList($category_id);
-        $list = json_decode(file_get_contents(storage_path('list/menuList.json')), true);
+        $list = HttpRequest::getProductList($category_id);
+//        $list = json_decode(file_get_contents(storage_path('list/menuList.json')), true);
         try {
             $keyboard = new ReplyMarkup();
             $message = $this->telegram->send($is_new ? 'sendMessage' : 'editMessageText', [
@@ -114,8 +114,8 @@ class Menu extends Message
 
         list($product_id, $product_type) = explode(',', $data);
 
-//        $product = HttpRequest::getProductDetail($product_id, $product_type);
-        $product = json_decode(file_get_contents(storage_path('list/product.json')), true);
+        $product = HttpRequest::getProductDetail($product_id, $product_type);
+//        $product = json_decode(file_get_contents(storage_path('list/product.json')), true);
 
         if (empty($product)) {
             $this->sendErrorToAdmin('Maxsulot ma\'lumotlari kelmadi, serverda xatolik ro\'y berdi');
