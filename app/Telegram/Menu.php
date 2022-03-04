@@ -47,7 +47,9 @@ class Menu extends Message
 
     public function sendMenusList(bool $is_edit = false)
     {
-        $this->deleteMessages();
+        if (!$is_edit) {
+            $this->deleteMessages();
+        }
 //        $list = HttpRequest::getMenuList();
         $list = json_decode(file_get_contents(storage_path('list/category.json')), true);
         $keyboard = new ReplyMarkup();
