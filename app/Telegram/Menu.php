@@ -69,6 +69,7 @@ class Menu extends Message
     public function getMenuSendProductsList($category_id, bool $is_new = false)
     {
         if ($category_id === 'Ortga') {
+            $this->deleteMessages();
             return $this->sendMainMenu();
         }
         $this->getBasket()->update([
