@@ -46,4 +46,9 @@ class Chat
     {
         return $this->chat['username'] ?? null;
     }
+
+    public function type()
+    {
+        return $this->chat['type'];
+    }
 }

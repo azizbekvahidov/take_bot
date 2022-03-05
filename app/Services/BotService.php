@@ -48,14 +48,22 @@ class BotService implements SetActions
     {
         $this->telegram = $telegram;
         $this->updates = $updates;
-        $this->json = $this->updates->json();
 
-        $this->chat_id = $this->updates->chat();
-        $this->text = $this->updates->text();
     }
 
+    /**
+     * @return array|mixed|void
+     */
     public function init()
     {
+
+        $this->initVariables();
+
+
+        if ($this->updates->isChannel() || $this->updates->isGroup()) {
+            return;
+        }
+
         app()->setLocale($this->fetchUser()->language ?: 'uz');
 
         if (!$this->botUser()->isRegistrationFinished()) {
@@ -176,5 +184,16 @@ class BotService implements SetActions
                 'message_id' => $message_id
             ]);
         }
+    }
+
+    /**
+     * @return void
+     */
+    private function initVariables()
+    {
+        $this->json = $this->updates->json();
+
+        $this->chat_id = $this->updates->chat();
+        $this->text = $this->updates->text();
     }
 }

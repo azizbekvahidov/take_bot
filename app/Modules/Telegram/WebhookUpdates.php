@@ -139,4 +139,30 @@ class WebhookUpdates
                 return null;
         }
     }
+
+
+    /**
+     * @return bool
+     */
+    public function isChannel(): bool
+    {
+        return isset($this->updates['channel_post']) || isset($this->updates['edited_channel_post']);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGroup(): bool
+    {
+        return $this->message()->chat()->type() === 'group';
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isPrivate(): bool
+    {
+        return $this->message()->chat()->type() === 'private';
+    }
 }
