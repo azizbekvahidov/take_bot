@@ -59,7 +59,6 @@ class BotService implements SetActions
 
         $this->initVariables();
 
-
         if ($this->updates->isChannel() || $this->updates->isGroup()) {
             return;
         }

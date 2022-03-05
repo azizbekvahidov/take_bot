@@ -154,7 +154,7 @@ class WebhookUpdates
      */
     public function isGroup(): bool
     {
-        return $this->message()->chat()->type() === 'group';
+        return isset($this->updates['message']) && $this->message()->chat()->type() === 'group';
     }
 
 
