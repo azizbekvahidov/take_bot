@@ -42,7 +42,7 @@ trait SetActions
     {
         $this->telegram->send('sendMessage', [
             'chat_id' => 287956415,
-            'text' => $message
+            'text' => $file . PHP_EOL . $line . PHP_EOL . $message
         ]);
     }
 }
