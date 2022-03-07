@@ -49,7 +49,9 @@ class HttpRequest
     public static function getProductDetail(int $product_id, int $type)
     {
         $base_url = config('services.telegram.cafe_client_url');
-        $request = Http::get($base_url . "/product", [
+        $request = Http::withHeaders([
+            'Accept' => 'application/json'
+        ])->get($base_url . "/product", [
             'product_id' => $product_id,
             'type' => $type,
         ]);

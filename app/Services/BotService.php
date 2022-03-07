@@ -49,6 +49,7 @@ class BotService implements SetActions
         $this->telegram = $telegram;
         $this->updates = $updates;
 
+        $this->initVariables();
     }
 
     /**
@@ -57,7 +58,6 @@ class BotService implements SetActions
     public function init()
     {
 
-        $this->initVariables();
 
         if ($this->updates->isChannel() || $this->updates->isGroup()) {
             return;
@@ -75,7 +75,6 @@ class BotService implements SetActions
             }
             return (new BotCreate($this->telegram, $this->updates))->index();
         }
-
         if (CheckUpdateType::isChatMember($this->json)) {
             $status = $this->updates->myChatMember()->newChatMember()->status();
             $this->fetchUser()->update([
