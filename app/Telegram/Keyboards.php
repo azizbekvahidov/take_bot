@@ -133,7 +133,7 @@ class Keyboards
                 'callback_data' => implode('|', [
                     'class' => Menu::class,
                     'method' => MethodConstant::GET_PRODUCT_DETAIL,
-                    'data' => "{$item['id']},{$item['type']}"
+                    'data' => "{$item['product']['id']},{$item['type']}"
                 ])
             ];
             if (count($temp) === 2 || $key === $last) {
