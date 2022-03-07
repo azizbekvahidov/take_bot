@@ -66,6 +66,9 @@ class OrderConfirmation extends BotService
         }
     }
 
+    /**
+     * @return void
+     */
     public function confirmPhoneAndRequestOrderType()
     {
         if ($this->text === __("Ortga")) {

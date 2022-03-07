@@ -41,7 +41,7 @@ class Menu extends Message
             ]);
             $this->sendMainMenu();
         } catch (\Exception|ApiServerException $exception) {
-            $this->sendErrorToAdmin($exception->getMessage());
+            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
     }
 
@@ -97,7 +97,7 @@ class Menu extends Message
                 'text' => $exception->getMessage()
             ]);
         } catch (\Exception|ApiServerException $exception) {
-            $this->sendErrorToAdmin($exception->getMessage());
+            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
 
     }
@@ -118,7 +118,7 @@ class Menu extends Message
 //        $product = json_decode(file_get_contents(storage_path('list/product.json')), true);
 
         if (empty($product)) {
-            $this->sendErrorToAdmin('Maxsulot ma\'lumotlari kelmadi, serverda xatolik ro\'y berdi');
+            $this->sendErrorToAdmin('', '', 'Maxsulot ma\'lumotlari kelmadi, serverda xatolik ro\'y berdi');
             return;
         } elseif (empty($product['data'])) {
             $this->telegram->send('sendMessage', [

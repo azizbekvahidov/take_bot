@@ -39,7 +39,7 @@ class Basket extends Message
                 'text' => $exception->getMessage()
             ]);
         } catch (ApiServerException|Exception $exception) {
-            $this->sendErrorToAdmin($exception->getMessage());
+            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
     }
 
@@ -67,9 +67,8 @@ class Basket extends Message
         }
         foreach ($basket as $key => $product) {
             $product_ids[] = $product->id;
-//            $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type);
-
-            $product_detail = json_decode(file_get_contents(storage_path('list/product.json')), true);
+            $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type);
+//            $product_detail = json_decode(file_get_contents(storage_path('list/product.json')), true);
 
             if (empty($product_detail)) {
                 throw new ApiServerException('Savatda maxsulot ma\'lumotlari kelmadi, server ishlamadi');
@@ -128,7 +127,7 @@ class Basket extends Message
                 'text' => $exception->getMessage()
             ]);
         } catch (ApiServerException|Exception $exception) {
-            $this->sendErrorToAdmin($exception->getMessage());
+            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
     }
 

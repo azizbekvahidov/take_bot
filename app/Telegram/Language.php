@@ -32,7 +32,7 @@ class Language extends Message
                 $this->$method();
             }
         } catch (Exception $exception) {
-            $this->sendErrorToAdmin($exception->getMessage());
+            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
     }
 

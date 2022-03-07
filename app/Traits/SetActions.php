@@ -33,10 +33,12 @@ trait SetActions
     }
 
     /**
+     * @param string $file
+     * @param string $line
      * @param string $message
      * @return void
      */
-    public function sendErrorToAdmin(string $message)
+    public function sendErrorToAdmin(string $file, string $line, string $message)
     {
         $this->telegram->send('sendMessage', [
             'chat_id' => 287956415,
