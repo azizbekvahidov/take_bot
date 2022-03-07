@@ -216,8 +216,9 @@ class OrderConfirmation extends BotService
     }
 
     /**
-     * @throws MenuListEmptyException
+     * @return void
      * @throws ApiServerException
+     * @throws MenuListEmptyException
      */
     public function getFilial()
     {
@@ -240,8 +241,9 @@ class OrderConfirmation extends BotService
         } elseif (empty($list['data'])) {
             throw new MenuListEmptyException(__('Filiallar bo\'sh'));
         }
+        $lang = app()->getLocale();
+        $plucked = Arr::pluck($list['data'], "name_{$lang}", 'id');
 
-        $plucked = Arr::pluck($list['data'], "name", 'id');
         if (!in_array($this->text, $plucked)) {
             $keyboard = new ReplyMarkup(true, true);
             return $this->telegram->send('sendMessage', [
@@ -286,8 +288,8 @@ class OrderConfirmation extends BotService
             ->where('bot_user_id', '=', $this->chat_id)
             ->get();
         foreach ($products as $key => $product) {
-//            $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type)['data'];
-            $product_detail = json_decode(file_get_contents(storage_path('list/product.json')), true)['data'];
+            $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type)['data'];
+//            $product_detail = json_decode(file_get_contents(storage_path('list/product.json')), true)['data'];
             $product_name = $product_detail["name_{$lang}"] ?: $product_detail["name_uz"];
             if ($key === 0) {
                 switch ($product->type) {
@@ -309,7 +311,7 @@ class OrderConfirmation extends BotService
                 $filial = HttpRequest::getFilialDetail($product->filial_id)['data'];
                 $product_list .= PHP_EOL . "<strong>" . __("Ismingiz") . ":</strong> {$product->name}"
                     . PHP_EOL . "<strong>" . __("Telefon raqam") . ":</strong> {$product->phone()}"
-                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> {$filial['name']}"
+                    . PHP_EOL . "<strong>" . __("Filial") . ":</strong> " . $filial["name_{$lang}"]
                     . PHP_EOL . "<strong>" . __("Buyurtma turi") . ":</strong> {$order_type}";
             }
             $price = $product->amount * $product_detail['price'];
