@@ -163,6 +163,6 @@ class WebhookUpdates
      */
     public function isPrivate(): bool
     {
-        return $this->message()->chat()->type() === 'private';
+        return isset($this->updates['message']) && $this->message()->chat()->type() === 'private';
     }
 }
