@@ -40,9 +40,12 @@ trait SetActions
      */
     public function sendErrorToAdmin(string $file, string $line, string $message)
     {
-        $this->telegram->send('sendMessage', [
-            'chat_id' => 287956415,
-            'text' => $file . PHP_EOL . $line . PHP_EOL . $message
-        ]);
+        $admins = json_decode(config('services.telegram.admins'), true);
+        foreach ($admins as $admin) {
+            $this->telegram->send('sendMessage', [
+                'chat_id' => $admin,
+                'text' => $file . PHP_EOL . $line . PHP_EOL . $message
+            ]);
+        }
     }
 }
