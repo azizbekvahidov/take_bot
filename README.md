@@ -10,6 +10,7 @@
 
 - add BOT_TOKEN to .env 
 - add CAFE_CLIENT_URL to .env
+- add BOT_ADMINS to .env
 - configure database configurations in .env
 - php artisan migrate
 - Url for webhook: https://api.telegram.org/bot{token}/setWebhook?url={url}/api/telegram-bot-connect
