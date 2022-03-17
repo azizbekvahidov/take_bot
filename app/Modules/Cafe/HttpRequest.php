@@ -4,6 +4,7 @@
 namespace App\Modules\Cafe;
 
 
+use App\Exceptions\ApiServerException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 
@@ -95,6 +96,7 @@ class HttpRequest
     /**
      * @param mixed $orders
      * @return array|bool|mixed
+     * @throws ApiServerException
      */
     public static function postData(Collection $orders)
     {
@@ -103,11 +105,11 @@ class HttpRequest
         $request = Http::withHeaders([
             'Accept' => 'application/json'
         ])->post($base_url . '/delivery/store', self::params($orders));
-        if ($request->successful()) {
-            return $request->json();
-        }
 
-        return [];
+        if (!$request->successful()) {
+            throw new ApiServerException('Serverda hatolik, buyurtma bazaga yozilmadi');
+        }
+        return $request->json();
     }
 
     /**
