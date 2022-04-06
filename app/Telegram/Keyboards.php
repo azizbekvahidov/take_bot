@@ -258,7 +258,7 @@ class Keyboards
         $temp_array = [];
         foreach ($list['data'] as $key => $item) {
             $temp_array[] = [
-                'text' => ($item["name_{$lang}"] ?? $item["name"])
+                'text' => ($item["name_{$lang}"] ?? $item["name_uz"])
             ];
             if (count($temp_array) == 2 || $key === $last_position) {
                 $return_array[] = $temp_array;
