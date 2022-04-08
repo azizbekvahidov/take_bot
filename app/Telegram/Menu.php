@@ -12,6 +12,8 @@ use App\Modules\Telegram\ReplyMarkup;
 use App\Modules\Telegram\Telegram;
 use App\Modules\Telegram\WebhookUpdates;
 use App\Telegram\Updates\Message;
+use Exception;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Storage;
 
 class Menu extends Message
@@ -40,7 +42,7 @@ class Menu extends Message
                 'text' => $exception->getMessage()
             ]);
             $this->sendMainMenu();
-        } catch (\Exception|ApiServerException $exception) {
+        } catch (Exception|ApiServerException $exception) {
             $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
     }
@@ -96,14 +98,14 @@ class Menu extends Message
                 'chat_id' => $this->chat_id,
                 'text' => $exception->getMessage()
             ]);
-        } catch (\Exception|ApiServerException $exception) {
+        } catch (Exception|ApiServerException $exception) {
             $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
 
     }
 
     /**
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function getProductDetail($data)
     {
@@ -148,10 +150,14 @@ class Menu extends Message
         (new MessageLog($message))->createLog();
     }
 
+    /**
+     * @param string $data
+     * @return void
+     */
     public function countAmountOfProduct(string $data)
     {
         $basket = $this->getBasket();
-        if (((float)$basket->amount <= 0.5 && $data == -0.5) || $data == 0) {
+        if (((float)$basket->amount <= 1 && $data == -1) || $data == 0) {
             return;
         }
         $basket->update([
@@ -165,6 +171,10 @@ class Menu extends Message
         ]);
     }
 
+    /**
+     * @param string $data
+     * @return void
+     */
     public function orderProduct(string $data)
     {
         $this->deleteMessages();
@@ -188,16 +198,25 @@ class Menu extends Message
         }
     }
 
+    /**
+     * @return void
+     */
     public function confirmName()
     {
         (new OrderConfirmation($this->telegram, $this->updates))->sendNameConfirmationRequest();
     }
 
+    /**
+     * @return void
+     */
     public function confirmNameSendConfirmationForPhone()
     {
         (new OrderConfirmation($this->telegram, $this->updates))->confirmNameSendConfirmationForPhone();
     }
 
+    /**
+     * @return void
+     */
     public function confirmPhoneAndRequestOrderType()
     {
         (new OrderConfirmation($this->telegram, $this->updates))->confirmPhoneAndRequestOrderType();
@@ -230,22 +249,31 @@ class Menu extends Message
         (new OrderConfirmation($this->telegram, $this->updates))->getFilial();
     }
 
+    /**
+     * @return void
+     * @throws ApiServerException
+     * @throws MenuListEmptyException
+     */
     public function orderProducts()
     {
         (new OrderConfirmation($this->telegram, $this->updates))->orderProducts();
     }
 
-    protected function preparedText(array $product)
+    /**
+     * @param array $product
+     * @return string
+     */
+    protected function preparedText(array $product): string
     {
         $lang = app()->getLocale();
-        return $product["name_{$lang}"] ?? $product['name_uz']
+        return ($product["name_{$lang}"] ?? $product['name_uz'])
             . PHP_EOL . PHP_EOL . $product['price'];
     }
 
     /**
      * @param string|null $url
      * @return false|string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     private function getImage(?string $url = null)
     {

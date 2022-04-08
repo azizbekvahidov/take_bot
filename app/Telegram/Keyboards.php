@@ -167,7 +167,7 @@ class Keyboards
                     'callback_data' => implode('|', [
                         'class' => Menu::class,
                         'method' => MethodConstant::COUNT_AMOUNT_OF_PRODUCT,
-                        'data' => -0.5
+                        'data' => -1
                     ]),
                 ],
                 [
@@ -183,7 +183,7 @@ class Keyboards
                     'callback_data' => implode('|', [
                         'class' => Menu::class,
                         'method' => MethodConstant::COUNT_AMOUNT_OF_PRODUCT,
-                        'data' => 0.5
+                        'data' => 1
                     ]),
                 ],
             ],
