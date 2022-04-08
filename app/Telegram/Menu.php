@@ -267,7 +267,7 @@ class Menu extends Message
     {
         $lang = app()->getLocale();
         return ($product["name_{$lang}"] ?? $product['name_uz'])
-            . PHP_EOL . PHP_EOL . $product['price'];
+            . PHP_EOL . PHP_EOL . __("Narxi") . ": " . ($product['price'] ?? 0) . " " . __('so\'m');
     }
 
     /**
@@ -280,7 +280,7 @@ class Menu extends Message
         if (!is_null($url) && @getimagesize($url)) {
             return file_get_contents($url);
         }
-        return Storage::disk('assets')->get('products/default-image.jpg');
+        return Storage::disk('assets')->get('products /default-image . jpg');
     }
 
     /**
