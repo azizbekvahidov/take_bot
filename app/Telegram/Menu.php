@@ -280,7 +280,7 @@ class Menu extends Message
         if (!is_null($url) && @getimagesize($url)) {
             return file_get_contents($url);
         }
-        return Storage::disk('assets')->get('products /default-image . jpg');
+        return Storage::disk('assets')->get('products/default-image.jpg');
     }
 
     /**
