@@ -7,7 +7,7 @@ class OrderTypeConstant
 
     const TAKE = 'take';
 
-    const BOOKING = 'booking';
+    const BOOKING = 'book_table';
 
     const DELIVERY = 'delivery';
 }
