@@ -15,6 +15,7 @@ use App\Telegram\Updates\Message;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class Menu extends Message
@@ -130,21 +131,20 @@ class Menu extends Message
             ]);
             return;
         }
-        // todo fix
         if ($basket = $this->checkProduct($product_id, $product_type)) {
             if ($basket->is_finished) {
                 $this->getBasket()->delete();
             }
             $basket->update([
+                'is_modify' => true,
                 'is_finished' => false
             ]);
         } else {
             $this->getBasket()->update([
                 'product_id' => $product_id,
                 'product_type' => $product_type,
-                'amount' => 1
+                'amount' => 0
             ]);
-            $basket = 1;
         }
 
         $this->deleteMessages();
@@ -152,7 +152,7 @@ class Menu extends Message
         $message = $this->telegram->send('sendPhoto', [
             'chat_id' => $this->chat_id,
             'caption' => $this->preparedText($product['data']),
-            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails(is_int($basket) ? $basket : $basket->amount))
+            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails())
         ], [
             'type' => 'photo',
             'content' => $this->getImage($product['data']['image']),
@@ -167,18 +167,15 @@ class Menu extends Message
      */
     public function countAmountOfProduct(string $data)
     {
-        $basket = $this->getBasket();
-        if (((float)$basket->amount <= 1 && $data == -1) || $data == 0) {
+        if ((int)$data < 1) {
             return;
         }
-        $basket->update([
-            'amount' => $amount = ($basket->amount + (float)$data)
-        ]);
+
         $keyboard = new ReplyMarkup();
         $this->telegram->send('editMessageReplyMarkup', [
             'chat_id' => $this->chat_id,
             'message_id' => $this->updates->callbackQuery()->message()->getMessageId(),
-            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails($amount))
+            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails(($data)))
         ]);
     }
 
@@ -189,23 +186,34 @@ class Menu extends Message
     public function orderProduct(string $data)
     {
         $this->deleteMessages();
-        switch ($data) {
-            case 'order':
-                $this->getBasket()->update([
-                    'is_finished' => true
+        if ($data === 'order') {
+
+            $this->getBasket()->update([
+                'is_finished' => true,
+                'is_modify' => false
+            ]);
+            $this->confirmName();
+
+        } elseif ($data === 'Ortga') {
+
+            $basket = $this->getBasket();
+
+            if ($basket->is_modify) {
+                $basket->update([
+                    'is_finished' => true,
+                    'is_modify' => false
                 ]);
-                $this->confirmName();
-                break;
-            case 'another';
-                $this->getBasket()->update([
-                    'is_finished' => true
-                ]);
-                $this->sendMenusList();
-                break;
-            case 'Ortga':
-                $basket = $this->getBasket();
-                $this->getMenuSendProductsList($basket->category_id, true);
-                break;
+            }
+            $this->getMenuSendProductsList($basket->category_id, true);
+
+        } elseif (preg_match('/^another/', $data)) {
+            $amount = explode(',', $data)[1];
+            $this->getBasket()->update([
+                'amount' => DB::raw("amount + {$amount}"),
+                'is_finished' => true,
+                'is_modify' => false
+            ]);
+            $this->sendMenusList();
         }
     }
 
