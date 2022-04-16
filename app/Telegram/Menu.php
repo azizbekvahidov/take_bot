@@ -14,6 +14,7 @@ use App\Modules\Telegram\WebhookUpdates;
 use App\Telegram\Updates\Message;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Menu extends Message
@@ -129,19 +130,29 @@ class Menu extends Message
             ]);
             return;
         }
-
-        $this->getBasket()->update([
-            'product_id' => $product_id,
-            'product_type' => $product_type,
-            'amount' => 1
-        ]);
+        // todo fix
+        if ($basket = $this->checkProduct($product_id, $product_type)) {
+            if ($basket->is_finished) {
+                $this->getBasket()->delete();
+            }
+            $basket->update([
+                'is_finished' => false
+            ]);
+        } else {
+            $this->getBasket()->update([
+                'product_id' => $product_id,
+                'product_type' => $product_type,
+                'amount' => 1
+            ]);
+            $basket = 1;
+        }
 
         $this->deleteMessages();
         $keyboard = new ReplyMarkup();
         $message = $this->telegram->send('sendPhoto', [
             'chat_id' => $this->chat_id,
             'caption' => $this->preparedText($product['data']),
-            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails())
+            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails(is_int($basket) ? $basket : $basket->amount))
         ], [
             'type' => 'photo',
             'content' => $this->getImage($product['data']['image']),
@@ -291,6 +302,19 @@ class Menu extends Message
         return Basket::firstOrCreate([
             'bot_user_id' => $this->chat_id,
             'is_finished' => false
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param int $type
+     * @return Model|null
+     */
+    protected function checkProduct(int $id, int $type): ?Model
+    {
+        return Basket::query()->firstWhere([
+            ['product_id', '=', $id],
+            ['product_type', '=', $type]
         ]);
     }
 }
