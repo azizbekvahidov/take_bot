@@ -2,6 +2,7 @@
 
 namespace App\Telegram;
 
+use App\Constants\ActionConstant;
 use App\Constants\MethodConstant;
 use App\Exceptions\ApiServerException;
 use App\Exceptions\MenuListEmptyException;
@@ -47,7 +48,7 @@ class Basket extends Message
      * @throws ApiServerException
      * @throws MenuListEmptyException
      */
-    public function sendProductsList()
+    public function sendProductsList(?string $data = null)
     {
         $lang = app()->getLocale();
 
@@ -69,7 +70,6 @@ class Basket extends Message
             $product_ids[] = $product->id;
             $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type);
 //            $product_detail = json_decode(file_get_contents(storage_path('list/product.json')), true);
-
             if (empty($product_detail)) {
                 throw new ApiServerException('Savatda maxsulot ma\'lumotlari kelmadi, server ishlamadi');
             } elseif (empty($product_detail['data'])) {
@@ -104,7 +104,6 @@ class Basket extends Message
     public function productManipulation($data)
     {
         $this->deleteMessages();
-
         if ($data === 'order') {
             return $this->basket()->unlessEmpty(function () {
                 (new OrderConfirmation($this->telegram, $this->updates))->sendNameConfirmationRequest();

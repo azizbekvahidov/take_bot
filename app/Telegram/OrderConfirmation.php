@@ -21,7 +21,7 @@ class OrderConfirmation extends BotService
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
             'text' => __("Ismingizni tasdiqlang") . ": {$this->fetchUser()->name}",
-            'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton(false))
+            'reply_markup' => $keyboard->keyboard(Keyboards::sendConfirmButton())
         ]);
 
         if ($message['ok']) {
@@ -31,12 +31,23 @@ class OrderConfirmation extends BotService
         }
     }
 
+    /**
+     * @return void
+     * @throws ApiServerException
+     * @throws MenuListEmptyException
+     */
     public function confirmNameSendConfirmationForPhone()
     {
         $name = $this->text;
         if ($this->text === __('Tasdiqlayman')) {
             $name = $this->fetchUser()->name;
         }
+
+        if ($this->text === __('Ortga')) {
+            (new \App\Telegram\Basket($this->telegram, $this->updates))->sendProductsList();
+            return;
+        }
+
         if (Str::length($this->text) > 200) {
             return $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,
@@ -114,8 +125,8 @@ class OrderConfirmation extends BotService
     }
 
     /**
-     * @throws \App\Exceptions\MenuListEmptyException
-     * @throws \App\Exceptions\ApiServerException
+     * @throws MenuListEmptyException
+     * @throws ApiServerException
      */
     public function confirmOrderTypeGoNextStep()
     {
@@ -169,8 +180,8 @@ class OrderConfirmation extends BotService
     }
 
     /**
-     * @throws \App\Exceptions\MenuListEmptyException
-     * @throws \App\Exceptions\ApiServerException
+     * @throws MenuListEmptyException
+     * @throws ApiServerException
      */
     public function getAddress()
     {
@@ -195,8 +206,8 @@ class OrderConfirmation extends BotService
     }
 
     /**
-     * @throws \App\Exceptions\MenuListEmptyException
-     * @throws \App\Exceptions\ApiServerException
+     * @throws MenuListEmptyException
+     * @throws ApiServerException
      */
     protected function sendFilialList()
     {

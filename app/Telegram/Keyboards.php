@@ -7,7 +7,6 @@ use App\Constants\MainMenuButtons;
 use App\Constants\MethodConstant;
 use App\Exceptions\ApiServerException;
 use App\Exceptions\MenuListEmptyException;
-use App\Modules\Cafe\HttpRequest;
 
 class Keyboards
 {
@@ -97,6 +96,13 @@ class Keyboards
                 $temp = [];
 
                 if ($key === $last) {
+                    $return_items[][] = ['text' => __('Savat'),
+                        'callback_data' => implode('|', [
+                            'class' => Basket::class,
+                            'method' => MethodConstant::SEND_PRODUCTS_LIST,
+                            'data' => 'basket'
+                        ])
+                    ];
                     $return_items[][] = ['text' => __('Ortga'),
                         'callback_data' => implode('|', [
                             'class' => Menu::class,
@@ -141,6 +147,13 @@ class Keyboards
                 $temp = [];
 
                 if ($key === $last) {
+                    $return_items[][] = ['text' => __('Savat'),
+                        'callback_data' => implode('|', [
+                            'class' => Basket::class,
+                            'method' => MethodConstant::SEND_PRODUCTS_LIST,
+                            'data' => 'basket'
+                        ])
+                    ];
                     $return_items[][] = ['text' => __('Ortga'),
                         'callback_data' => implode('|', [
                             'class' => Menu::class,
@@ -194,14 +207,6 @@ class Keyboards
                         'class' => Menu::class,
                         'method' => MethodConstant::ORDER_PRODUCT,
                         'data' => 'another'
-                    ]),
-                ],
-                [
-                    'text' => __('Buyurtma berish'),
-                    'callback_data' => implode('|', [
-                        'class' => Menu::class,
-                        'method' => MethodConstant::ORDER_PRODUCT,
-                        'data' => 'order'
                     ]),
                 ],
             ],
