@@ -53,7 +53,6 @@ class Basket extends Message
         $lang = app()->getLocale();
 
         $this->deleteMessages();
-        $keyboard = new ReplyMarkup();
         $message_text = "";
         $product_ids = [];
         $basket = $this->basket();
@@ -88,6 +87,14 @@ class Basket extends Message
                 . PHP_EOL . "     <strong>" . __("Miqdori") . ":</strong> {$product->amount}"
                 . PHP_EOL . "     <strong>" . __("Narxi") . ":</strong> " . ($product->amount * $product_detail['price']) . " " . __("so'm");
         }
+        $keyboard = new ReplyMarkup(true, true);
+        $this->telegram->send('sendMessage', [
+            'chat_id' => $this->chat_id,
+            'text' => __('Savat'),
+            'reply_markup' => ($this->text === __('Ortga') ? $keyboard->keyboard(Keyboards::mainMenuButtons()) : null)
+        ]);
+        $keyboard = new ReplyMarkup();
+
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
             'text' => $message_text,
