@@ -227,6 +227,8 @@ class Menu extends Message
 
     /**
      * @return void
+     * @throws ApiServerException
+     * @throws MenuListEmptyException
      */
     public function confirmNameSendConfirmationForPhone()
     {
