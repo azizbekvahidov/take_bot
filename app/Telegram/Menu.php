@@ -132,9 +132,9 @@ class Menu extends Message
             return;
         }
         if ($basket = $this->checkProduct($product_id, $product_type)) {
-//            if ($basket->is_finished) {
-//                $this->getBasket()->delete();
-//            }
+            if ($basket->is_finished) {
+                $this->getBasket()->delete();
+            }
             $basket->update([
                 'is_modify' => true,
                 'is_finished' => false
