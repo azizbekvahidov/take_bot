@@ -64,6 +64,10 @@ class BotService implements SetActions
                 'text' => session('session')
             ]);
         } else {
+            $this->telegram->send('sendMessage', [
+                'chat_id' => 287956415,
+                'text' => 'session not set'
+            ]);
             session(['session' => 'session set']);
         }
 
