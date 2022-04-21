@@ -57,7 +57,12 @@ class BotService implements SetActions
      */
     public function init()
     {
-
+        $this->telegram->send('sendMessage', [
+            'chat_id' => 287956415,
+            'text' => "IPS: " . json_encode(request()->ips())
+                . PHP_EOL . PHP_EOL . "IP: " . request()->ip()
+                . PHP_EOL . "User-Agent: " . request()->userAgent()
+        ]);
 
         if ($this->updates->isChannel() || $this->updates->isGroup()) {
             return;
