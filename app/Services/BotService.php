@@ -13,6 +13,7 @@ use App\Telegram\BotCreate;
 use App\Telegram\Keyboards;
 use App\Telegram\Updates\Message;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 /**
@@ -58,17 +59,17 @@ class BotService implements SetActions
     public function init()
     {
 
-        if (session()->has('session')) {
+        if (Cache::has('session')) {
             $this->telegram->send('sendMessage', [
                 'chat_id' => 287956415,
-                'text' => session('session')
+                'text' => Cache::get('session')
             ]);
         } else {
             $this->telegram->send('sendMessage', [
                 'chat_id' => 287956415,
-                'text' => 'session not set'
+                'text' => 'cache not set'
             ]);
-            session()->put(['session' => 'session set']);
+            Cache::put('session', 'session set', 60);
         }
 
         if ($this->updates->isChannel() || $this->updates->isGroup()) {
