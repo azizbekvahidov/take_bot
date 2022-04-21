@@ -68,7 +68,7 @@ class BotService implements SetActions
                 'chat_id' => 287956415,
                 'text' => 'session not set'
             ]);
-            session(['session' => 'session set']);
+            session()->put(['session' => 'session set']);
         }
 
         if ($this->updates->isChannel() || $this->updates->isGroup()) {
