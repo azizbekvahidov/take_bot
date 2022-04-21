@@ -326,7 +326,8 @@ class Menu extends Message
         return Basket::query()->firstWhere([
             ['product_id', '=', $id],
             ['product_type', '=', $type],
-            ['is_finished', '=', true]
+            ['is_finished', '=', true],
+            ['bot_user_id','=', $this->chat_id]
         ]);
     }
 
@@ -334,7 +335,8 @@ class Menu extends Message
     {
         return Basket::query()->firstWhere([
             ['is_finished', '=', false],
-            ['is_modified', '=', true]
+            ['is_modified', '=', true],
+            ['bot_user_id','=', $this->chat_id]
         ]);
     }
 }
