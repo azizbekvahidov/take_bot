@@ -132,9 +132,9 @@ class Menu extends Message
             return;
         }
         if ($basket = $this->checkProduct($product_id, $product_type)) {
-            if ($basket->is_finished) {
-                $this->getBasket()->delete();
-            }
+//            if ($basket->is_finished) {
+//                $this->getBasket()->delete();
+//            }
             $basket->update([
                 'is_modify' => true,
                 'is_finished' => false
@@ -187,11 +187,12 @@ class Menu extends Message
     {
         $this->deleteMessages();
         if ($data === 'order') {
-
-            $this->getBasket()->update([
-                'is_finished' => true,
-                'is_modify' => false
-            ]);
+            if ($modified_product = $this->getModifiedProduct()) {
+                $modified_product->update([
+                    'is_finished' => true,
+                    'is_modify' => false
+                ]);
+            }
             $this->confirmName();
 
         } elseif ($data === 'Ortga') {
@@ -324,7 +325,16 @@ class Menu extends Message
     {
         return Basket::query()->firstWhere([
             ['product_id', '=', $id],
-            ['product_type', '=', $type]
+            ['product_type', '=', $type],
+            ['is_finished', '=', true]
+        ]);
+    }
+
+    public function getModifiedProduct()
+    {
+        return Basket::query()->firstWhere([
+            ['is_finished', '=', false],
+            ['is_modified', '=', true]
         ]);
     }
 }
