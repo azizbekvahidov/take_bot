@@ -58,6 +58,15 @@ class BotService implements SetActions
     public function init()
     {
 
+        if (session()->has('session')) {
+            $this->telegram->send('sendMessage', [
+                'chat_id' => 287956415,
+                'text' => session('session')
+            ]);
+        } else {
+            session(['session' => 'session set']);
+        }
+
         if ($this->updates->isChannel() || $this->updates->isGroup()) {
             return;
         }
