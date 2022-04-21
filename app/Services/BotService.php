@@ -58,20 +58,6 @@ class BotService implements SetActions
      */
     public function init()
     {
-
-        if (Cache::has('session')) {
-            $this->telegram->send('sendMessage', [
-                'chat_id' => 287956415,
-                'text' => Cache::get('session')
-            ]);
-        } else {
-            $this->telegram->send('sendMessage', [
-                'chat_id' => 287956415,
-                'text' => 'cache not set'
-            ]);
-            Cache::put('session', 'session set', 60);
-        }
-
         if ($this->updates->isChannel() || $this->updates->isGroup()) {
             return;
         }
