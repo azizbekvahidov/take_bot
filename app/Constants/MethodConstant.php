@@ -27,7 +27,9 @@ class MethodConstant
 
     const MENU_CONFIRM_NAME_SEND_CONFIRMATION_FOR_PHONE = 'confirmNameSendConfirmationForPhone';
 
-    const MENU_CONFIRM_PHONE_AND_REQUEST_ORDER_TYPE = 'confirmPhoneAndRequestOrderType';
+    const MENU_CONFIRM_PHONE_AND_REQUEST_COORDINATES = 'confirmPhoneAndRequestCoordinates';
+
+    const MENU_GET_COORDINATES_AND_REQUEST_ORDER_TYPE = 'getCoordinatesAndRequestOrderType';
 
     const MENU_CONFIRM_ORDER_TYPE_GO_NEXT_STEP = 'confirmOrderTypeGoNextStep';
 

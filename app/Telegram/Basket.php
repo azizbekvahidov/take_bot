@@ -147,11 +147,18 @@ class Basket extends Message
         (new OrderConfirmation($this->telegram, $this->updates))->confirmNameSendConfirmationForPhone();
     }
 
-    public function confirmPhoneAndRequestOrderType()
+    public function confirmPhoneAndRequestCoordinates()
     {
-        (new OrderConfirmation($this->telegram, $this->updates))->confirmPhoneAndRequestOrderType();
+        (new OrderConfirmation($this->telegram, $this->updates))->confirmPhoneAndRequestCoordinates();
     }
 
+    /**
+     * @return void
+     */
+    public function getCoordinatesAndRequestOrderType()
+    {
+        (new OrderConfirmation($this->telegram, $this->updates))->getCoordinatesAndRequestOrderType();
+    }
     /**
      * @throws MenuListEmptyException
      * @throws ApiServerException

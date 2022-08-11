@@ -72,7 +72,7 @@ class OrderConfirmation extends BotService
 
         if ($message['ok']) {
             $this->action()->update([
-                'sub_action' => MethodConstant::MENU_CONFIRM_PHONE_AND_REQUEST_ORDER_TYPE
+                'sub_action' => MethodConstant::MENU_CONFIRM_PHONE_AND_REQUEST_COORDINATES
             ]);
         }
     }
@@ -80,7 +80,7 @@ class OrderConfirmation extends BotService
     /**
      * @return void
      */
-    public function confirmPhoneAndRequestOrderType()
+    public function confirmPhoneAndRequestCoordinates()
     {
         if ($this->text === __("Ortga")) {
             $this->sendNameConfirmationRequest();
@@ -103,12 +103,52 @@ class OrderConfirmation extends BotService
         $this->updateUnServedProducts([
             'phone' => $phone
         ]);
+        $this->sendLocationsRequest();
+    }
+
+    protected function sendLocationsRequest()
+    {
+        $this->deleteMessages();
+        $keyboard = new ReplyMarkup(true, true);
+
+        $message = $this->telegram->send('sendMessage', [
+            'chat_id' => $this->chat_id,
+            'text' => __('Lokatsiyangizni jo\'nating'),
+            'reply_markup' => $keyboard->keyboard(Keyboards::locationRequest())
+        ]);
+
+        if ($message['ok']) {
+            $this->action()->update([
+                'sub_action' => MethodConstant::MENU_GET_COORDINATES_AND_REQUEST_ORDER_TYPE
+            ]);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function getCoordinatesAndRequestOrderType()
+    {
+        $message = $this->updates->message();
+        if (!$message->isLocation()) {
+            $keyboard = new ReplyMarkup(true, true);
+            return $this->telegram->send('sendMessage', [
+                'chat_id' => $this->chat_id,
+                'text' => __('Lokatsiyangizni jo\'nating'),
+                'reply_markup' => $keyboard->keyboard(Keyboards::locationRequest())
+            ]);
+        }
+
+        $this->updateUnServedProducts([
+            'latitude' => $message->location()->latitude(),
+            'longitude' => $message->location()->longitude(),
+        ]);
+
         $this->sendOrderTypeRequest();
     }
 
     protected function sendOrderTypeRequest()
     {
-        $this->deleteMessages();
         $keyboard = new ReplyMarkup(true, true);
 
         $message = $this->telegram->send('sendMessage', [
@@ -272,7 +312,6 @@ class OrderConfirmation extends BotService
         ]);
 
         $keyboard = new ReplyMarkup(true, true);
-
         $message = $this->telegram->send('sendMessage', [
             'chat_id' => $this->chat_id,
             'text' => $this->getOrderedProductsList(),

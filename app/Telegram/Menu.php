@@ -239,9 +239,17 @@ class Menu extends Message
     /**
      * @return void
      */
-    public function confirmPhoneAndRequestOrderType()
+    public function confirmPhoneAndRequestCoordinates()
     {
-        (new OrderConfirmation($this->telegram, $this->updates))->confirmPhoneAndRequestOrderType();
+        (new OrderConfirmation($this->telegram, $this->updates))->confirmPhoneAndRequestCoordinates();
+    }
+
+    /**
+     * @return void
+     */
+    public function getCoordinatesAndRequestOrderType()
+    {
+        (new OrderConfirmation($this->telegram, $this->updates))->getCoordinatesAndRequestOrderType();
     }
 
     /**
@@ -294,10 +302,10 @@ class Menu extends Message
 
     /**
      * @param string|null $url
-     * @return false|string
+     * @return string
      * @throws FileNotFoundException
      */
-    private function getImage(?string $url = null)
+    private function getImage(?string $url = null): string
     {
         if (!is_null($url) && @getimagesize($url)) {
             return file_get_contents($url);
@@ -327,7 +335,7 @@ class Menu extends Message
             ['product_id', '=', $id],
             ['product_type', '=', $type],
             ['is_finished', '=', true],
-            ['bot_user_id','=', $this->chat_id]
+            ['bot_user_id', '=', $this->chat_id]
         ]);
     }
 
@@ -336,7 +344,7 @@ class Menu extends Message
         return Basket::query()->firstWhere([
             ['is_finished', '=', false],
             ['is_modified', '=', true],
-            ['bot_user_id','=', $this->chat_id]
+            ['bot_user_id', '=', $this->chat_id]
         ]);
     }
 }

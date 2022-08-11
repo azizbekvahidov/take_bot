@@ -425,4 +425,16 @@ class Keyboards
             ]
         ];
     }
+
+    public static function locationRequest(): array
+    {
+        return [
+            [
+                [
+                    'text' => __('Lokatsiyani jo\'natish'),
+                    'request_location' => true
+                ]
+            ]
+        ];
+    }
 }

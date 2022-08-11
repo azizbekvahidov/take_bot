@@ -117,4 +117,20 @@ class Message
     {
         return new File(empty($file) ? $this->message : $file);
     }
+
+    /**
+     * @return bool
+     */
+    public function isLocation(): bool
+    {
+        return isset($this->message['location']);
+    }
+
+    /**
+     * @return Location
+     */
+    public function location(): Location
+    {
+        return new Location($this->message['location']);
+    }
 }

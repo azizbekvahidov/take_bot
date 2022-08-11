@@ -101,7 +101,6 @@ class HttpRequest
     public static function postData(Collection $orders)
     {
         $base_url = config('services.telegram.cafe_client_url');
-
         $request = Http::withHeaders([
             'Accept' => 'application/json'
         ])->post($base_url . '/delivery/store', self::params($orders));
@@ -127,7 +126,9 @@ class HttpRequest
                     'address' => $order->address,
                     'filial_id' => $order->filial_id,
                     'order_type' => $order->type,
-                    'products' => []
+                    'products' => [],
+                    'latitude' => $order->latitude,
+                    'longitude' => $order->longitude
                 ];
             }
             $prepared_data['products'][] = [
