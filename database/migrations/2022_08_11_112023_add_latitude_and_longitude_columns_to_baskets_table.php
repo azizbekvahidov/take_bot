@@ -14,8 +14,8 @@ class AddLatitudeAndLongitudeColumnsToBasketsTable extends Migration
     public function up()
     {
         Schema::table('baskets', function (Blueprint $table) {
-            $table->decimal('latitude')->nullable();
-            $table->decimal('longitude')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
         });
     }
 
