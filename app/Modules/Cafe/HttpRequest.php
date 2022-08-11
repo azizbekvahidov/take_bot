@@ -126,9 +126,9 @@ class HttpRequest
                     'address' => $order->address,
                     'filial_id' => $order->filial_id,
                     'order_type' => $order->type,
-                    'products' => [],
                     'latitude' => $order->latitude,
-                    'longitude' => $order->longitude
+                    'longitude' => $order->longitude,
+                    'products' => [],
                 ];
             }
             $prepared_data['products'][] = [
