@@ -21,13 +21,10 @@ class Keyboards
                 [
                     'text' => __(MainMenuButtons::MENU)
                 ],
-                [
-                    'text' => __(MainMenuButtons::BASKET)
-                ],
             ],
             [
                 [
-                    'text' => __(MainMenuButtons::MENU_LIST)
+                    'text' => __(MainMenuButtons::BASKET)
                 ],
                 [
                     'text' => __(MainMenuButtons::ALTER_LANGUAGE)

@@ -5,7 +5,6 @@ namespace App\Constants;
 use App\Telegram\Basket;
 use App\Telegram\Language;
 use App\Telegram\Menu;
-use App\Telegram\MenuList;
 
 class ActionConstant
 {
@@ -15,7 +14,6 @@ class ActionConstant
 
     const ALTER_LANGUAGE = Language::class;
 
-    const MENU_LIST = MenuList::class;
 
     /**
      * @return string[]
@@ -26,7 +24,6 @@ class ActionConstant
             self::MENU,
             self::BASKET,
             self::ALTER_LANGUAGE,
-            self::MENU_LIST,
         ];
     }
 
@@ -40,7 +37,6 @@ class ActionConstant
                 __(MainMenuButtons::MENU) => self::MENU,
                 __(MainMenuButtons::ALTER_LANGUAGE) => self::ALTER_LANGUAGE,
                 __(MainMenuButtons::BASKET) => self::BASKET,
-                __(MainMenuButtons::MENU_LIST) => self::MENU_LIST
             ][$button] ?? null;
     }
 }
