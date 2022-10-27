@@ -103,7 +103,10 @@ class OrderConfirmation extends BotService
         $this->updateUnServedProducts([
             'phone' => $phone
         ]);
-        $this->sendLocationsRequest();
+
+        // ToDo fix location
+        $this->sendOrderTypeRequest();
+//        $this->sendLocationsRequest();
     }
 
     protected function sendLocationsRequest()
