@@ -23,6 +23,12 @@ final class From
         $this->from = $from;
     }
 
+
+    public function __get($name)
+    {
+        return $this->from[$name] ?? null;
+    }
+
     /**
      * @return int
      */

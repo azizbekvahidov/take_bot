@@ -62,7 +62,7 @@ class BotService implements SetActions
             return;
         }
 
-        app()->setLocale($this->fetchUser()->language ?: 'uz');
+        app()->setLocale($this->fetchUser()->language ?: $this->updates->message()->from()->language_code);
 
         if (!$this->botUser()->isRegistrationFinished()) {
             $this->deleteMessages();
