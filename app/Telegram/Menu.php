@@ -15,6 +15,7 @@ use App\Telegram\Updates\Message;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -51,25 +52,35 @@ class Menu extends Message
 
     public function sendMenusList(bool $is_edit = false)
     {
-        if (!$is_edit) {
-            $this->deleteMessages();
-        }
+        $this->deleteMessages();
         $list = HttpRequest::getMenuList();
 //        $list = json_decode(file_get_contents(storage_path('list/category.json')), true);
+
+
         $keyboard = new ReplyMarkup();
-        $message = $this->telegram->send($is_edit ? 'editMessageCaption' : 'sendPhoto', [
-            'chat_id' => $this->chat_id,
-            'caption' => __('Menyuni tanlang'),
-            'message_id' => $is_edit ? $this->updates->callbackQuery()->message()->getMessageId() : 0,
-            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::menusList($list))
-        ], [
-            'type' => 'photo',
-            'content' => file_get_contents(public_path('assets/menu/menu.png')),
-            'name' => 'menu.png'
-        ]);
-        if (!$is_edit) {
-            (new MessageLog($message))->createLog();
+        $photo = Cache::get("menu_image");
+        if (!$photo) {
+            $message = $this->telegram->send('sendPhoto', [
+                'chat_id' => $this->chat_id,
+                'caption' => __('Menyuni tanlang'),
+                'reply_markup' => $keyboard->inline()->keyboard(Keyboards::menusList($list))
+            ], [
+                'type' => 'photo',
+                'content' => file_get_contents(public_path('assets/menu/menu.png')),
+                'name' => 'menu.png'
+            ]);
+            $photo = last($message["result"]["photo"])["file_id"];
+            Cache::put("menu_image", $photo, now()->addDays(5));
+        } else {
+            $message = $this->telegram->send('sendPhoto', [
+                'photo' => $photo,
+                'chat_id' => $this->chat_id,
+                'caption' => __('Menyuni tanlang'),
+                'reply_markup' => $keyboard->inline()->keyboard(Keyboards::menusList($list))
+            ]);
         }
+
+        (new MessageLog($message))->createLog();
     }
 
     /**
@@ -90,15 +101,15 @@ class Menu extends Message
 //        $list = json_decode(file_get_contents(storage_path('list/menuList.json')), true);
         try {
             $keyboard = new ReplyMarkup();
-            $message = $this->telegram->send($is_new ? 'sendMessage' : 'editMessageText', [
+
+            $this->deleteMessages();
+
+            $message = $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,
-                'message_id' => $this->updates->callbackQuery()->message()->getMessageId(),
                 'text' => __('Maxsulotni tanlang'),
                 'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productsList($list))
             ]);
-            if ($is_new) {
-                (new MessageLog($message))->createLog();
-            }
+            (new MessageLog($message))->createLog();
         } catch (MenuListEmptyException $exception) {
             $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,
