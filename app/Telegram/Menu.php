@@ -57,11 +57,15 @@ class Menu extends Message
         $list = HttpRequest::getMenuList();
 //        $list = json_decode(file_get_contents(storage_path('list/category.json')), true);
         $keyboard = new ReplyMarkup();
-        $message = $this->telegram->send($is_edit ? 'editMessageText' : 'sendMessage', [
+        $message = $this->telegram->send($is_edit ? 'editMessageCaption' : 'sendPhoto', [
             'chat_id' => $this->chat_id,
-            'text' => __('Menyuni tanlang'),
+            'caption' => __('Menyuni tanlang'),
             'message_id' => $is_edit ? $this->updates->callbackQuery()->message()->getMessageId() : 0,
             'reply_markup' => $keyboard->inline()->keyboard(Keyboards::menusList($list))
+        ], [
+            'type' => 'photo',
+            'content' => file_get_contents(public_path('assets/menu/menu.png')),
+            'name' => 'menu.png'
         ]);
         if (!$is_edit) {
             (new MessageLog($message))->createLog();
