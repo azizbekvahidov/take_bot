@@ -164,15 +164,31 @@ class Menu extends Message
 
         $this->deleteMessages();
         $keyboard = new ReplyMarkup();
-        $message = $this->telegram->send('sendPhoto', [
-            'chat_id' => $this->chat_id,
-            'caption' => $this->preparedText($product['data']),
-            'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails())
-        ], [
-            'type' => 'photo',
-            'content' => $this->getImage($product['data']['image']),
-            'name' => 'product'
-        ]);
+        $photo = Cache::get($product['data']['image']);
+
+        if (!$photo) {
+            $message = $this->telegram->send('sendPhoto', [
+                'chat_id' => $this->chat_id,
+                'caption' => $this->preparedText($product['data']),
+                'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails())
+            ], [
+                'type' => 'photo',
+                'content' => $this->getImage($product['data']['image']),
+                'name' => 'product'
+            ]);
+
+            $photo = last($message["result"]["photo"])["file_id"];
+            Cache::put($product['data']['image'], $photo, now()->addDay());
+        } else {
+            $message = $this->telegram->send('sendPhoto', [
+                'photo' => $photo,
+                'chat_id' => $this->chat_id,
+                'caption' => $this->preparedText($product['data']),
+                'reply_markup' => $keyboard->inline()->keyboard(Keyboards::productDetails())
+            ]);
+        }
+
+
         (new MessageLog($message))->createLog();
     }
 
