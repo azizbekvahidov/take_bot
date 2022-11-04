@@ -117,12 +117,17 @@ class Telegram
     private function sendErrorMessage(array $params, array $request)
     {
         try {
-            $this->send('sendMessage', [
+            $message = $this->send('sendMessage', [
                 'chat_id' => 287956415,
                 'text' => json_encode([
                     'params' => $params,
                     'error' => $request
                 ])
+            ]);
+            $this->send("sendMessage", [
+                "chat_id" => $message["result"]["chat"]["id"],
+                "text" => $this->getWebhookUpdates()->body(),
+                "message_id" => $message["result"]["message_id"]
             ]);
         } catch (\Exception $exception) {
             info($exception);
