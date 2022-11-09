@@ -39,8 +39,6 @@ class Basket extends Message
                 'chat_id' => $this->chat_id,
                 'text' => $exception->getMessage()
             ]);
-        } catch (ApiServerException|Exception $exception) {
-            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
     }
 
@@ -132,8 +130,6 @@ class Basket extends Message
                 'chat_id' => $this->chat_id,
                 'text' => $exception->getMessage()
             ]);
-        } catch (ApiServerException|Exception $exception) {
-            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
         }
     }
 

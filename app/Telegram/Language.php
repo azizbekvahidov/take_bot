@@ -26,14 +26,11 @@ class Language extends Message
 
     public function index()
     {
-        try {
-            $method = $this->action()->sub_action;
-            if (method_exists($this, $method)) {
-                $this->$method();
-            }
-        } catch (Exception $exception) {
-            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
+        $method = $this->action()->sub_action;
+        if (method_exists($this, $method)) {
+            $this->$method();
         }
+
     }
 
     public function sendLanguagesList()
