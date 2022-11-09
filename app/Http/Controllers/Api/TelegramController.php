@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Modules\Telegram\Telegram;
 use App\Services\BotService;
-use Exception;
+use Throwable;
 
 class TelegramController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @throws Exception
      */
     public function __invoke()
     {
@@ -21,7 +20,7 @@ class TelegramController extends Controller
             $updates = $telegram->getWebhookUpdates();
             $bot_service = new BotService($telegram, $updates);
             $bot_service->init();
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             info($exception->getMessage());
             info($exception->getTraceAsString());
         }
