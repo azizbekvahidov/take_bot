@@ -13,7 +13,6 @@ use App\Telegram\BotCreate;
 use App\Telegram\Keyboards;
 use App\Telegram\Updates\Message;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 /**
