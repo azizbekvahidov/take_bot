@@ -19,3 +19,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('telegram-bot-connect', \App\Http\Controllers\Api\TelegramController::class);
+Route::post('mr-saddam-bot-connect', \App\Http\Controllers\MrSaddamController::class);
