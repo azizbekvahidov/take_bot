@@ -22,7 +22,11 @@ class BotUser extends Model
      */
     public function phone(): string
     {
-        preg_match("/(998)(\d{2})(\d{3})(\d{2})(\d{2})/", $this->phone, $matches);
-        return "+{$matches[1]} {$matches[2]} {$matches[3]} {$matches[4]} {$matches[5]}";
+        try {
+            preg_match("/(998)(\d{2})(\d{3})(\d{2})(\d{2})/", $this->phone, $matches);
+            return "+{$matches[1]} {$matches[2]} {$matches[3]} {$matches[4]} {$matches[5]}";
+        } catch (\Exception $exception) {
+            return $this->phone;
+        }
     }
 }
