@@ -49,6 +49,10 @@ class BotService implements SetActions
         $this->telegram = $telegram;
         $this->updates = $updates;
 
+        if ($this->updates->isChannel() || $this->updates->isGroup()) {
+            return;
+        }
+
         $this->initVariables();
     }
 
@@ -57,10 +61,6 @@ class BotService implements SetActions
      */
     public function init()
     {
-        if ($this->updates->isChannel() || $this->updates->isGroup()) {
-            return;
-        }
-
         app()->setLocale($this->fetchUser()->language ?: "ru");
 
         if (!$this->botUser()->isRegistrationFinished()) {

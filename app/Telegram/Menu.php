@@ -58,14 +58,15 @@ class Menu extends Message
         $keyboard = new ReplyMarkup();
         $photo = Cache::get("menu_image");
         if (!$photo) {
+            $menu_name = config('services.telegram.menu_name');
             $message = $this->telegram->send('sendPhoto', [
                 'chat_id' => $this->chat_id,
                 'caption' => __('Menyuni tanlang'),
                 'reply_markup' => $keyboard->inline()->keyboard(Keyboards::menusList($list))
             ], [
                 'type' => 'photo',
-                'content' => file_get_contents(public_path('assets/menu/menu.png')),
-                'name' => 'menu.png'
+                'content' => file_get_contents(public_path("assets/menu/$menu_name")),
+                'name' => $menu_name
             ]);
             $photo = last($message["result"]["photo"])["file_id"];
             Cache::put("menu_image", $photo, now()->addDays(5));
