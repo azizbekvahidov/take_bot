@@ -49,10 +49,6 @@ class BotService implements SetActions
         $this->telegram = $telegram;
         $this->updates = $updates;
 
-        if ($this->updates->isChannel() || $this->updates->isGroup()) {
-            return;
-        }
-
         $this->initVariables();
     }
 

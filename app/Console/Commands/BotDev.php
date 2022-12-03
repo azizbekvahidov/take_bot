@@ -63,6 +63,11 @@ class BotDev extends Command
                     $this->info("Request");
                     $last_update_id = $update['update_id'];
                     $message = new WebhookUpdates(json_encode($update));
+
+                    if ($message->isGroup() || $message->isChannel()) {
+                        return;
+                    }
+
                     $start = new BotService($this->telegram, $message);
                     $start->init();
                 }

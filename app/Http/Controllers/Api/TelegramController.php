@@ -26,6 +26,9 @@ class TelegramController extends Controller
         $this->telegram = new Telegram();
         $updates = $this->telegram->getWebhookUpdates();
         try {
+            if ($updates->isGroup() || $updates->isChannel()) {
+                return;
+            }
             $bot_service = new BotService($this->telegram, $updates);
             $bot_service->init();
         } catch (Throwable $exception) {
