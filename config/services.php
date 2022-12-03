@@ -34,7 +34,7 @@ return [
         'token' => env('BOT_TOKEN', '2128158267:AAHtuu90SQ5kIfadKQOKLh1bDab2NOVta0s'),
         'cafe_client_url' => env('CAFE_CLIENT_URL', 'http://87.237.234.154/api/v1'),
         'admins' => env('BOT_ADMINS', '[287956415]'),
-        'menu_name' => 'menu.jpg'
+        'menu_name' => 'menu.png'
     ]
 
 ];
