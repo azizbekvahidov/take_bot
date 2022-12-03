@@ -69,10 +69,13 @@ class BotDev extends Command
             }
             goto start;
 
-        } catch (Throwable $e) {
-            $this->sendErrorToAdmin($e->getFile(), $e->getLine(), $e->getMessage());
-            info($e->getMessage());
-            info($e->getTraceAsString());
+        } catch (Throwable $exception) {
+            $this->sendErrorToAdmin(
+                $exception->getFile(),
+                $exception->getLine(),
+                $exception->getMessage(),
+                $updates->json()
+            );
             goto beginning;
         }
 

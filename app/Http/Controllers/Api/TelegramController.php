@@ -24,14 +24,17 @@ class TelegramController extends Controller
     public function __invoke()
     {
         $this->telegram = new Telegram();
+        $updates = $this->telegram->getWebhookUpdates();
         try {
-            $updates = $this->telegram->getWebhookUpdates();
             $bot_service = new BotService($this->telegram, $updates);
             $bot_service->init();
         } catch (Throwable $exception) {
-            $this->sendErrorToAdmin($exception->getFile(), $exception->getLine(), $exception->getMessage());
-            info($exception->getMessage());
-            info($exception->getTraceAsString());
+            $this->sendErrorToAdmin(
+                $exception->getFile(),
+                $exception->getLine(),
+                $exception->getMessage(),
+                $updates->json()
+            );
         }
 
     }
