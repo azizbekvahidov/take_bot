@@ -59,7 +59,7 @@ class BotService implements SetActions
     {
         app()->setLocale($this->fetchUser()->language ?: "ru");
 
-        if (!$this->botUser()->isRegistrationFinished()) {
+        if (!$this->botUser()->isRegistrationFinished() && $this->chat_id > 0) {
             $this->deleteMessages();
             if (Str::lower($this->text) === '/start') {
                 $this->action()->update([
@@ -69,6 +69,7 @@ class BotService implements SetActions
             }
             return (new BotCreate($this->telegram, $this->updates))->index();
         }
+
         if (CheckUpdateType::isChatMember($this->json)) {
             $status = $this->updates->myChatMember()->newChatMember()->status();
             $this->fetchUser()->update([
