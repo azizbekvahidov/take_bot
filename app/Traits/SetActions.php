@@ -38,13 +38,13 @@ trait SetActions
      * @param string $message
      * @return void
      */
-    public function sendErrorToAdmin(string $file, string $line, string $message)
+    public function sendErrorToAdmin(string $file, string $line, string $message, array $data)
     {
         $admins = json_decode(config('services.telegram.admins'), true);
         foreach ($admins as $admin) {
             $this->telegram->send('sendMessage', [
                 'chat_id' => $admin,
-                'text' => $file . PHP_EOL . $line . PHP_EOL . $message
+                'text' => $file . PHP_EOL . $line . PHP_EOL . $message . PHP_EOL . json_encode($data)
             ]);
         }
     }

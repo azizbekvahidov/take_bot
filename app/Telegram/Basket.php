@@ -68,9 +68,17 @@ class Basket extends Message
             $product_detail = HttpRequest::getProductDetail($product->product_id, $product->product_type);
 //            $product_detail = json_decode(file_get_contents(storage_path('list/product.json')), true);
             if (empty($product_detail)) {
-                throw new ApiServerException('Savatda maxsulot ma\'lumotlari kelmadi, server ishlamadi');
+                throw ApiServerException::make('Maxsulot ma\'lumotlari kelmadi, serverda xatolik ro\'y berdi')
+                    ->setData([
+                        'id' => $product->product_id,
+                        'type' => $product->product_type,
+                    ]);
             } elseif (empty($product_detail['data'])) {
-                throw new MenuListEmptyException(__('Maxsulot topilmadi'));
+                throw MenuListEmptyException::make(__('Maxsulot topilmadi'))
+                    ->setData([
+                        'id' => $product->product_id,
+                        'type' => $product->product_type,
+                    ]);
             }
 
             $product_detail = $product_detail['data'];
@@ -155,6 +163,7 @@ class Basket extends Message
     {
         (new OrderConfirmation($this->telegram, $this->updates))->getCoordinatesAndRequestOrderType();
     }
+
     /**
      * @throws MenuListEmptyException
      * @throws ApiServerException

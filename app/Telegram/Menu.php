@@ -86,6 +86,7 @@ class Menu extends Message
      * @param $category_id
      * @param bool $is_new
      * @return array|mixed|void
+     * @throws ApiServerException
      */
     public function getMenuSendProductsList($category_id, bool $is_new = false)
     {
@@ -135,7 +136,11 @@ class Menu extends Message
 //        $product = json_decode(file_get_contents(storage_path('list/product.json')), true);
 
         if (empty($product)) {
-            throw new ApiServerException('Maxsulot ma\'lumotlari kelmadi, serverda xatolik ro\'y berdi');
+            throw ApiServerException::make('Maxsulot ma\'lumotlari kelmadi, serverda xatolik ro\'y berdi')
+                ->setData([
+                    'id' => $product_id,
+                    'type' => $product_type,
+                ]);
         } elseif (empty($product['data'])) {
             $this->telegram->send('sendMessage', [
                 'chat_id' => $this->chat_id,
